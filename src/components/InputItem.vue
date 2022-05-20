@@ -48,7 +48,7 @@
             @keydown.enter.prevent
             placeholder="Press Enter to submit"
           ></textarea>
-          <b-button @click="saveNote">등록</b-button>
+          <button class="todo__input_button" @click="saveNote">등록</button>
         </div>
       </div>
       <div class="text_filter-wrapper">
@@ -447,10 +447,19 @@ export default {
   /* overflow-y: scroll; */
   overflow: auto;
 }
-.todo__input-wrapper > button {
-  padding: 0.3em 0.7em;
+.todo__input_button {
+  padding: 0.45em 0.8em;
   margin-left: 0.5em;
+  border: none;
+  background-color: rgb(155, 154, 154);
+  color: white;
+  border-radius: 0.2em;
 }
+.todo__input_button:hover {
+  background-color: gray;
+  color: white;
+}
+
 .text_filter {
   position: absolute;
   border: 1px solid black;
