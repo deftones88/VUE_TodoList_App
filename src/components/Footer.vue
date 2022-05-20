@@ -1,13 +1,9 @@
 <template>
   <div class="footer-wrapper">
     <ul class="footer">
+      <li class="footer-list">JHK 2022</li>
       <li class="footer-list">
-        copyright JinhakApply Internship Season 2, 2022
-      </li>
-      <li class="footer-list">
-        <a href="https://github.com/jinhakapply-dev-internship/todo-list"
-          >Github</a
-        >
+        <a href="https://github.com/deftones88/VUE_TodoList_App">Github</a>
       </li>
     </ul>
   </div>
@@ -24,12 +20,13 @@
   margin: 50px 0;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
 }
 .footer-list {
   /* float: left; */
-  padding-top: 15px;
+  padding: 0 1em;
 }
 a {
   text-decoration: none;
