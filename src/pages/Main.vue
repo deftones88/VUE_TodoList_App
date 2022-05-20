@@ -45,6 +45,7 @@
               <TreeItem
                 v-for="notes in allNotes"
                 :key="notes.note.id + 'outer'"
+                :front="false"
                 :notes="notes.note"
                 :subs="notes.children"
                 :upper="notes"
@@ -76,7 +77,6 @@ export default {
       // selectedCat: "default",
       categories: [],
       searchKey: "",
-      prevCat: null,
     };
   },
   methods: {
@@ -213,5 +213,8 @@ export default {
   margin-top: 3em;
   font-size: 1.5em;
   color: rgb(145, 144, 144);
+}
+.tabs-wrapper {
+  margin-top: 1em;
 }
 </style>

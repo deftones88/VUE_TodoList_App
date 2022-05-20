@@ -7,12 +7,14 @@
         @mouseleave="active = false"
         :class="{ activeColor: active }"
       >
-        <td class="todo__list-item__category">
-          <span v-if="!depth"> {{ notes.category }}</span>
+        <td class="todo__list-item__category" v-if="front">
+          <div>
+            <span v-if="!depth"> {{ notes.category }}</span>
+          </div>
         </td>
         <td class="todo__list-item__item" :style="indent">
-          <span v-if="!front" :style="{ marginRight: '1em' }"></span>
-          <span v-if="depth" :style="{ marginRight: '5px' }">
+          <span :style="{ marginRight: '1em' }"></span>
+          <span v-if="depth" :style="{ marginRight: '.5em' }">
             <img src="@/assets/arrow-return-right.svg" />
           </span>
           <span class="todo__list-item__checker">
@@ -80,7 +82,7 @@
     <TreeItem
       v-for="sub in subs"
       :key="notes.id + sub.note.id"
-      :front="false"
+      :front="front"
       :subs="sub.children"
       :notes="sub.note"
       :depth="depth + 1"
@@ -107,6 +109,7 @@ export default {
       preText: "",
       active: false,
       cat: null,
+      prevCat: null,
       main: this.$root.$refs.main,
       input: this.$root.$refs.input,
       tabs: this.$root.$refs.tabs,
