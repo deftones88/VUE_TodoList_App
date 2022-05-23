@@ -25,7 +25,7 @@
               @keyup.enter="addNewCat"
             />
             <div class="options">
-              <ul v-show="categories.length">
+              <ul v-show="notesStore.categories.length">
                 <li v-for="(name, index) of filteredCat" :key="`name-${index}`">
                   <span class="options_name" @click="selectCat(name)">{{
                     name
@@ -42,7 +42,7 @@
           <textarea
             v-model="noteToSave.text"
             class="todo__input"
-            :id="`textArea-${note ? note.note.id : 0}`"
+            :id="`textArea-${note ? note.id : 0}`"
             rows="1.5"
             @keyup.enter="saveNote"
             @keydown.enter.prevent
@@ -69,28 +69,35 @@
 </template>
 
 <script>
+import { mapActions } from "pinia";
+import { useStore } from "@/store/useNotes";
+
 export default {
   name: "InputItem",
   props: ["note"],
   data() {
+    // const notesStore = useStore();
     return {
+      notesStore: useStore(),
       searchCat: "",
       selectedCat: null,
       visibleCat: false,
-      categories: [],
+      // categories: [],
+      // allNotes: [],
       noteToSave: {
-        id: null,
         category: null,
         text: "",
         updated: "",
         status: false,
       },
+      index: 0,
       popup: false,
       main: this.$root.$refs.main,
       tabs: this.$root.$refs.tabs,
     };
   },
   methods: {
+    ...mapActions(useStore, ["updateAllNotes", "updateCategories"]),
     // pop up
     showPopup() {
       this.popup = true;
@@ -112,7 +119,6 @@ export default {
     },
     // 투두 아이템 초기화 함수
     resetNoteToSave() {
-      this.noteToSave.id = null;
       this.noteToSave.category = this.selectCategory;
       this.noteToSave.text = "";
       this.noteToSave.updated = "";
@@ -125,7 +131,7 @@ export default {
     // 차일드 만들어주는 재귀 함수
     recurFunc(items) {
       for (let item of items) {
-        if (item.note.id === this.note.note.id) {
+        if (item.id === this.note.id) {
           if (!item.children) item.children = [];
           item.children.push({ note: this.noteToSave, parents: item });
           break;
@@ -154,7 +160,7 @@ export default {
       this.recurDelCatFunc(allNotes, cat);
 
       localStorage.setItem(
-        "notesapp-notes",
+        this.notesStore.local,
         JSON.stringify(allNotes, this.getCircularReplacer())
       );
     },
@@ -164,38 +170,27 @@ export default {
         "this will erase all tasks included in this category"
       );
       if (answer) {
-        this.deleteCatNote(name);
-        const cat = this.getAllCat();
-        const newCat = cat.filter((item) => item !== name);
-        this.categories = newCat;
-        localStorage.setItem("notesapp-category", JSON.stringify(newCat));
-        this.selectedCat = null;
-        this.showPopup();
-        this.$root.$refs.tabs.selectTabWName("All");
-        this.main.updateList();
-        this.main.updateCat();
       }
     },
     // 카테고리 추가 함수
     addNewCat() {
       this.searchCat = this.searchCat.trim();
-      // 카테고리 스트링 길이 체크
       if (this.searchCat.length < 1) return;
-      const check = this.getAllCat();
-      // 카테고리 이미 존재하는 지 체크
+      const check = this.notesStore.categories;
       const exists = check.filter((item) => item === this.searchCat);
       if (exists.length) return;
 
-      // 새 카테고리 저장하고 나머지 초기화
-      this.categories.push(this.searchCat);
+      const ret = JSON.parse(
+        localStorage.getItem(this.notesStore.local) || "[]"
+      );
+      ret.push({ category: this.searchCat, objList: [] });
+      localStorage.setItem(this.notesStore.local, JSON.stringify(ret));
+      this.updateAllNotes();
+
       this.visibleCat = false;
       this.selectedCat = this.searchCat;
       this.searchCat = "";
-      localStorage.setItem(
-        "notesapp-category",
-        JSON.stringify(this.categories)
-      );
-      this.main.updateCat();
+      this.updateCategories();
     },
     // parents 노드 때문에 JSON.stringify할 때
     // circular reference 에러 나는 거 막기 위해 만든 함수
@@ -217,49 +212,34 @@ export default {
         return;
       }
       if (!this.selectedCat) this.selectedCat = this.note.note.category;
-      const notes = this.main.getAllNotes();
+
       this.noteToSave.text = this.noteToSave.text.trim();
       if (this.noteToSave.text.length < 1) return;
-      this.noteToSave.id = parseInt(
-        Math.ceil(Math.random() * Date.now())
-          .toPrecision(16)
-          .toString()
-          .replace(".", "")
-      );
       this.noteToSave.category = this.selectedCat;
 
       this.noteToSave.updated = new Date().toISOString();
 
-      if (this.note) {
-        this.recurFunc(notes);
-      } else {
-        notes.push({ note: this.noteToSave, parents: null });
-      }
-
-      localStorage.setItem(
-        "notesapp-notes",
-        JSON.stringify(notes, this.getCircularReplacer())
+      const ret = JSON.parse(
+        localStorage.getItem(this.notesStore.local) || "[]"
       );
-      this.main.updateList();
+      const found = ret.find((el) => el.category == this.selectedCat);
+      if (!found.objList) found.objList = [];
+      found.objList.push({ note: this.noteToSave, id: this.index++ });
+      localStorage.setItem(
+        this.notesStore.local,
+        JSON.stringify(ret, this.getCircularReplacer())
+      );
+      this.updateAllNotes();
       this.resetNoteToSave();
       if (this.$root.$refs.tabs.selected === this.selectedCat) {
-        this.main.updateCatFilter(this.selectedCat);
+        // this.main.updateCatFilter(this.selectedCat);
         this.$root.$refs.tabs.selectTabWName(this.selectedCat);
       } else {
-        this.main.updateCatFilter(0);
+        // this.main.updateCatFilter(0);
         this.$root.$refs.tabs.selectTabWName("All");
       }
       this.main.setSelected(null);
       // this.main.selectedCat = "default";
-    },
-    // 저장된 카테고리 가져오는 함수
-    getAllCat() {
-      const cat = JSON.parse(localStorage.getItem("notesapp-category") || "[]");
-      return cat;
-    },
-    // 카테고리 업뎃 함수
-    updateCat() {
-      this.categories = this.getAllCat();
     },
     // 새로운 투두 입력할 때 사용하는 제귀함수
     recursText(item, text) {
@@ -280,21 +260,17 @@ export default {
       });
     },
   },
-  mounted() {
-    this.updateCat();
-  },
   computed: {
     // 새 카테고리 쓸 때 밑에 비슷한 거 보여주는 함수
     filteredCat() {
       const category = this.searchCat.toLowerCase();
-      if (this.searchCat.length < 1) return this.categories;
-      return this.categories.filter((cat) =>
-        String(cat).toLowerCase().includes(category)
-      );
+      if (this.searchCat.length < 1) return this.notesStore.categories;
+      const temp = this.notesStore.categories;
+      return temp.filter((cat) => String(cat).toLowerCase().includes(category));
     },
     // 새로운 투두 텍스트 입력할 때 밑에 비슷한 이전 입력 값들 보여주는 함수
     filteredText() {
-      let ret = [];
+      const ret = [];
       const text = this.noteToSave.text.toLowerCase();
       const allNotes = this.main.getAllNotes();
       for (let notes of allNotes) ret.push(...this.recursText(notes, text));
@@ -304,6 +280,13 @@ export default {
     },
   },
   created() {
+    this.updateAllNotes();
+    this.updateCategories();
+    // console.log("cat", this.notesStore.categories);
+    // console.log("notes", this.notesStore.allNotes);
+    // console.log("local", this.notesStore.local);
+
+    // notesStore.allNotes = JSON.parse(localStorage.getItem(this.notesStore.local) || "[]");
     this.$root.$refs.input = this;
   },
 };

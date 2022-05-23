@@ -1,5 +1,33 @@
 <template>
   <div class="wrapper">
+    <!-- <div class="test">
+      <div
+        class="input-wrapper"
+        :style="{ display: 'flex', 'flex-direction': 'row' }"
+      >
+        <input v-model="testing" type="text" @keyup.enter="testFunc" />
+        <input v-model="save.text" type="text" @keyup.enter="testFuncInput" />
+      </div>
+      <div class="result-wrapper">
+        <div v-for="(testers, index) in allTests" :key="index">
+          <span :style="{ color: 'green' }"> {{ testers.category }}</span>
+          <div
+            v-for="test in testers.objList"
+            :key="test.id"
+            :style="{ color: 'skyblue' }"
+          >
+            <span :style="{ padding: '0 1em' }" @click="onClick(test)">
+              {{ test.note.text }}
+            </span>
+            <span>{{ changeDate(test.note.updated) }}</span>
+            <span :style="{ 'margin-left': '1em' }" @click="makeChild(test)"
+              >m</span
+            >
+          </div>
+        </div>
+      </div>
+    </div> -->
+
     <div class="todo_wrapper">
       <InputItem :note="null"></InputItem>
       <div class="filtered">
@@ -24,39 +52,60 @@
           </span>
         </div>
       </div>
-      <div class="tabs-wrapper" v-show="categories.length">
-        <TabsWrapper>
-          <Tab name="All" selected="true">
-            <div class="tree_wrapper">
-              <TreeItem
-                v-for="notes in allNotes"
-                :key="notes.note.id + 'outer'"
-                :front="true"
-                :notes="notes.note"
-                :subs="notes.children"
-                :upper="notes"
-                :depth="0"
-                :selected="selected"
-              />
-            </div>
-          </Tab>
-          <Tab v-for="(cat, index) in categories" :key="index" :name="cat">
-            <div class="tree_wrapper">
-              <TreeItem
-                v-for="notes in allNotes"
-                :key="notes.note.id + 'outer'"
-                :front="false"
-                :notes="notes.note"
-                :subs="notes.children"
-                :upper="notes"
-                :depth="0"
-                :selected="selected"
-              />
-            </div>
-          </Tab>
-        </TabsWrapper>
+      <div class="tabs-wrapper" v-show="notesStore.categories.length">
+        <div>
+          <TabsWrapper>
+            <Tab name="All" selected="true">
+              <div
+                class="tree_wrapper"
+                v-for="notes in notesStore.allNotes"
+                :key="notes.id"
+              >
+                <h1
+                  class="category_title"
+                  v-show="notes.objList.length"
+                  :style="{ margin: '1.5em 2em 0', display: 'flex' }"
+                >
+                  {{ notes.category }}
+                </h1>
+                <TreeItem
+                  v-for="obj in notes.objList"
+                  :key="obj.id + 'outer'"
+                  :front="true"
+                  :notes="obj.note"
+                  :subs="obj.children"
+                  :upper="obj"
+                  :depth="0"
+                  :selected="selected"
+                />
+              </div>
+            </Tab>
+            <Tab
+              v-for="(cat, index) in notesStore.categories"
+              :key="index"
+              :name="cat"
+            >
+              <div
+                class="tree_wrapper"
+                v-for="notes in notesStore.allNotes"
+                :key="notes.id"
+              >
+                <TreeItem
+                  v-for="obj in notes.objList"
+                  :key="obj.id + 'outer'"
+                  :front="false"
+                  :notes="obj.note"
+                  :subs="obj.children"
+                  :upper="obj"
+                  :depth="0"
+                  :selected="selected"
+                />
+              </div>
+            </Tab>
+          </TabsWrapper>
+        </div>
       </div>
-      <div class="empty" v-if="!allNotes.length">Add New Tasks</div>
+      <div class="empty" v-if="!notesStore.allNotes.length">Add New Tasks</div>
     </div>
   </div>
 </template>
@@ -65,21 +114,87 @@
 import TreeItem from "@/components/TreeItem.vue";
 import InputItem from "@/components/InputItem.vue";
 import Tab from "@/components/Tab.vue";
-import TabsWrapper from "../components/TabsWrapper.vue";
+import TabsWrapper from "@/components/TabsWrapper.vue";
+
+import { storeToRefs, mapActions } from "pinia";
+import { useStore } from "@/store/useNotes";
 
 export default {
   components: { TreeItem, InputItem, Tab, TabsWrapper },
   name: "Jhk",
   data() {
+    // const notesStore = useStore();
+    // const { allNotes, categories } = storeToRefs(notesStore);
+
     return {
-      allNotes: {},
+      notesStore: useStore(),
+      // allNotes: {},
       selected: null,
       // selectedCat: "default",
-      categories: [],
+      // categories: [],
       searchKey: "",
+
+      testing: "",
+      save: {
+        updated: null,
+        text: "",
+      },
+      allTests: [],
+      index: 0,
+      input: this.$root.$refs.input,
     };
   },
   methods: {
+    ...mapActions(useStore, ["updateAllNotes", "updateCategories"]),
+    // 날짜 수정용 함수
+    changeDate(date) {
+      const ret = new Date(date).toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      return ret;
+    },
+    makeChild(test) {
+      console.log(test);
+      if (!test.children) test.children = [];
+      test.children.push({ note: this.save, id: this.index });
+      this.index++;
+    },
+    onClick(test) {
+      console.log("before", this.allTests);
+      test.note.text = "yar";
+      test.note.updated = new Date().toISOString();
+      console.log("after", this.allTests);
+      localStorage.setItem("testing", JSON.stringify(this.allTests));
+      // this.allTests = JSON.parse(localStorage.getItem("testing") || "[]");
+    },
+    testFunc() {
+      this.testing = this.testing.trim();
+      if (this.testing.length < 1) return;
+      let ret = JSON.parse(localStorage.getItem("testing") || "[]");
+      if (!ret) ret = [];
+      ret.push({ category: this.testing, objList: [] });
+      localStorage.setItem("testing", JSON.stringify(ret));
+      this.allTests = JSON.parse(localStorage.getItem("testing") || "[]");
+    },
+    testFuncInput() {
+      this.save.text = this.save.text.trim();
+      if (this.save.text.length < 1) return;
+      let ret = JSON.parse(localStorage.getItem("testing") || "[]");
+      const found = ret.find((el) => el.category === this.testing);
+      console.log(found);
+      this.save.updated = new Date().toISOString();
+      if (!found.objList) found.objList = [];
+      found.objList.push({ note: this.save, id: this.index });
+      this.index++;
+      console.log("after", ret);
+      localStorage.setItem("testing", JSON.stringify(ret));
+      this.allTests = JSON.parse(localStorage.getItem("testing") || "[]");
+    },
     byteSize(val) {
       const len = new Blob([val]).size;
       return len;
@@ -107,30 +222,22 @@ export default {
         if (new Date(a.note.updated) < new Date(b.note.updated)) return -1;
       });
     },
-    // getAllNotes에서 리턴한 데이터 저장시키는 함수
-    updateList() {
-      this.allNotes = this.getAllNotes();
-    },
     // input 창 한 번에 하나만 뜨도록 selected 변수 정해주는 함수
     // InputItem에서 호출함
     setSelected(num) {
       this.selected = num;
     },
-    // 카테고리 별 분류할 때 쓰려고 카테고리를 InputItem에서 불러와 업뎃하는 함수
-    updateCat() {
-      this.categories = this.$root.$refs.input.getAllCat();
-    },
     // 선택된 카테고리로 분류하는 함수
     updateCatFilter(input) {
-      this.updateList();
-      let cat;
-      if (!input) cat = "default";
-      else cat = input;
-      if (cat !== "default") {
-        this.allNotes = this.allNotes.filter(
-          (notes) => notes.note.category == cat
-        );
-      }
+      // this.updateList();
+      // let cat;
+      // if (!input) cat = "default";
+      // else cat = input;
+      // if (cat !== "default") {
+      //   this.allNotes = this.allNotes.filter(
+      //     (notes) => notes.note.category == cat
+      //   );
+      // }
     },
     // 단어 검색 필터용 제귀함수
     recursText(item, text) {
@@ -149,9 +256,9 @@ export default {
     searchList() {
       let ret = [];
       const text = this.searchKey.toLowerCase();
-      const getNote = this.getAllNotes();
-      for (let notes of getNote) ret.push(...this.recursText(notes, text));
-      this.allNotes = ret;
+      // const getNote = this.getAllNotes();
+      // for (let notes of getNote) ret.push(...this.recursText(notes, text));
+      // this.allNotes = ret;
       this.selectedCat = "default";
     },
     // 단어 검색창의 X 누르면 초기화하는 함수
@@ -161,8 +268,9 @@ export default {
     },
   },
   mounted() {
-    this.updateList();
-    this.updateCat();
+    console.log(this.notesStore.allNotes);
+    this.updateAllNotes();
+    this.updateCategories();
   },
   created() {
     this.$root.$refs.main = this;

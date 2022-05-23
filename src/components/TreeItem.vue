@@ -7,11 +7,11 @@
         @mouseleave="active = false"
         :class="{ activeColor: active }"
       >
-        <td class="todo__list-item__category" v-if="front">
+        <!-- <td class="todo__list-item__category" v-if="front">
           <div>
             <span v-if="!depth"> {{ notes.category }}</span>
           </div>
-        </td>
+        </td> -->
         <td class="todo__list-item__item" :style="indent">
           <span :style="{ marginRight: '1em' }"></span>
           <span v-if="depth" :style="{ marginRight: '.5em' }">
@@ -109,7 +109,6 @@ export default {
       preText: "",
       active: false,
       cat: null,
-      prevCat: null,
       main: this.$root.$refs.main,
       input: this.$root.$refs.input,
       tabs: this.$root.$refs.tabs,
@@ -287,6 +286,9 @@ export default {
     showMatch() {
       return this.notes && this.selected === this.notes.id;
     },
+  },
+  created() {
+    console.log("notes", this.notes);
   },
 };
 </script>

@@ -56,6 +56,7 @@ export default {
   },
   created() {
     this.tabs = this.$children;
+    console.log("tabs", this.tabs);
     this.$root.$refs.tabs = this;
   },
 };
