@@ -26,6 +26,9 @@
 </template>
 
 <script>
+import { mapActions } from "pinia";
+import { useStore } from "@/store/useNotes";
+
 export default {
   name: "TabsWrapper",
   data() {
@@ -35,6 +38,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useStore, ["updateAllNotes", "updateFilter"]),
     selectTabWName(name) {
       this.tabs.forEach((tab) => {
         tab.isActive = tab.name === name;
@@ -49,14 +53,14 @@ export default {
     },
     updateCatFilter(input) {
       if (input === "All") {
-        input = 0;
+        this.updateFilter(0);
+        return;
       }
-      this.$root.$refs.main.updateCatFilter(input);
+      this.updateFilter(input);
     },
   },
   created() {
     this.tabs = this.$children;
-    console.log("tabs", this.tabs);
     this.$root.$refs.tabs = this;
   },
 };

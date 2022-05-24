@@ -5,11 +5,20 @@ export const useStore = defineStore("savedNotes", {
     allNotes: [],
     categories: [],
     local: "notes_app",
+    filter: "",
   }),
-  getters: {},
+  getters: {
+    categoriesCount() {
+      return this.categories.length;
+    },
+  },
   actions: {
     updateAllNotes() {
-      this.allNotes = JSON.parse(localStorage.getItem(this.local) || "[]");
+      const notes = JSON.parse(localStorage.getItem(this.local) || "[]");
+      this.allNotes = notes.sort((a, b) => {
+        if (a.category > b.category) return 1;
+        else return -1;
+      });
     },
     updateCategories() {
       const ret = [];
@@ -17,6 +26,25 @@ export const useStore = defineStore("savedNotes", {
         ret.push(obj.category);
       }
       this.categories = ret;
+    },
+    saveAllNotes() {
+      localStorage.setItem(
+        this.local,
+        JSON.stringify(this.allNotes, this.getCircularReplacer())
+      );
+    },
+    updateFilter(input) {
+      this.filter = input;
+    },
+    getCircularReplacer() {
+      const seen = new WeakSet();
+      return (key, value) => {
+        if (typeof value === "object" && value !== null) {
+          if (seen.has(value)) return;
+          seen.add(value);
+        }
+        return value;
+      };
     },
   },
 });

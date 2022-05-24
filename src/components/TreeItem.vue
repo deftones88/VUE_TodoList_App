@@ -62,7 +62,7 @@
             </span>
           </span>
         </td>
-        <td class="todo__list-item__delete" @click="deleteNote(notes.id)">
+        <td class="todo__list-item__delete" @click="deleteNote(notes)">
           <img src="@/assets/x-circle.svg" />
         </td>
         <td class="todo__list-item__fold">
@@ -96,6 +96,8 @@
 
 <script>
 import InputItem from "./InputItem.vue";
+import { mapActions } from "pinia";
+import { useStore } from "@/store/useNotes";
 
 export default {
   components: { InputItem },
@@ -103,6 +105,7 @@ export default {
   props: ["front", "subs", "notes", "upper", "depth", "selected"],
   data() {
     return {
+      notesStore: useStore(),
       isOpen: true,
       checked: false,
       isEdit: false,
@@ -115,6 +118,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useStore, ["saveAllNotes"]),
     // 수정용 제귀함수
     recurEdit(allItems, item) {
       for (let items of allItems) {
@@ -162,7 +166,7 @@ export default {
           JSON.stringify(allNotes, this.input.getCircularReplacer())
         );
         this.tabs.selectTabWName(this.tabs.selected);
-        this.tabs.updateCatFilter(this.tabs.selected);
+        // this.tabs.updateCatFilter(this.tabs.selected);
       }
     },
     // 차일드로 투두 만드는 함수
@@ -188,18 +192,25 @@ export default {
       }
     },
     // 투두 지우는 함수
-    async deleteNote(id) {
+    async deleteNote(notes) {
       const ret = await confirm("are you sure?");
       if (ret) {
-        const allNotes = this.main.getAllNotes();
-        this.recurDelFunc(allNotes, id, allNotes);
-
-        localStorage.setItem(
-          "notesapp-notes",
-          JSON.stringify(allNotes, this.input.getCircularReplacer())
-        );
-        this.tabs.selectTabWName(this.tabs.selected);
-        this.tabs.updateCatFilter(this.tabs.selected);
+        const allNotes = this.notesStore.allNotes;
+        allNotes.find((el) => {
+          for (const object of el.objList) {
+            if (object.note === notes) {
+              el.objList.splice(el.objList.indexOf(object), 1);
+            }
+          }
+        });
+        this.saveAllNotes();
+        // this.recurDelFunc(allNotes, id, allNotes);
+        // localStorage.setItem(
+        //   "notesapp-notes",
+        //   JSON.stringify(allNotes, this.input.getCircularReplacer())
+        // );
+        // this.tabs.selectTabWName(this.tabs.selected);
+        // this.tabs.updateCatFilter(this.tabs.selected);
       }
     },
     // 완료된 항목 자식 부모도 상태 확인하는 함수 (work in progress)
@@ -263,7 +274,7 @@ export default {
         JSON.stringify(allNotes, this.input.getCircularReplacer())
       );
       this.tabs.selectTabWName(this.tabs.selected);
-      this.tabs.updateCatFilter(this.tabs.selected);
+      // this.tabs.updateCatFilter(this.tabs.selected);
     },
     // 수정할 때 포커스 해주는 함수
     editFocus(id) {
@@ -286,9 +297,6 @@ export default {
     showMatch() {
       return this.notes && this.selected === this.notes.id;
     },
-  },
-  created() {
-    console.log("notes", this.notes);
   },
 };
 </script>

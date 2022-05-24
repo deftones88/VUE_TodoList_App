@@ -25,7 +25,7 @@
               @keyup.enter="addNewCat"
             />
             <div class="options">
-              <ul v-show="notesStore.categories.length">
+              <ul v-show="notesStore.categoriesCount">
                 <li v-for="(name, index) of filteredCat" :key="`name-${index}`">
                   <span class="options_name" @click="selectCat(name)">{{
                     name
@@ -57,9 +57,9 @@
           class="text_filter"
         >
           <li v-for="(text, index) of filteredText" :key="`text-${index}`">
-            <span class="text_filter-text">{{ text.text }}</span>
+            <span class="text_filter-text">{{ text.note.text }}</span>
             <span class="text_filter-updated">
-              {{ changeDate(text.updated) }}
+              {{ changeDate(text.note.updated) }}
             </span>
           </li>
         </ul>
@@ -97,7 +97,11 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useStore, ["updateAllNotes", "updateCategories"]),
+    ...mapActions(useStore, [
+      "updateAllNotes",
+      "updateCategories",
+      "saveAllNotes",
+    ]),
     // pop up
     showPopup() {
       this.popup = true;
@@ -218,18 +222,13 @@ export default {
       this.noteToSave.category = this.selectedCat;
 
       this.noteToSave.updated = new Date().toISOString();
-
-      const ret = JSON.parse(
-        localStorage.getItem(this.notesStore.local) || "[]"
+      this.updateAllNotes();
+      const found = this.notesStore.allNotes.find(
+        (el) => el.category == this.selectedCat
       );
-      const found = ret.find((el) => el.category == this.selectedCat);
       if (!found.objList) found.objList = [];
       found.objList.push({ note: this.noteToSave, id: this.index++ });
-      localStorage.setItem(
-        this.notesStore.local,
-        JSON.stringify(ret, this.getCircularReplacer())
-      );
-      this.updateAllNotes();
+      this.saveAllNotes();
       this.resetNoteToSave();
       if (this.$root.$refs.tabs.selected === this.selectedCat) {
         // this.main.updateCatFilter(this.selectedCat);
@@ -244,13 +243,20 @@ export default {
     // 새로운 투두 입력할 때 사용하는 제귀함수
     recursText(item, text) {
       let total = [];
-      if (item.note && item.note.text) {
-        if (item.note.text.toLowerCase().includes(text)) total.push(item.note);
+      if (item.objList.length) {
+        console.log(item.objList);
       }
-      if (item.children) {
-        for (let child of item.children)
-          total.push(...this.recursText(child, text));
-      }
+      // for (let notes of item) {
+      //   if (notes.note && notes.note.text) {
+      //     if (notes.note.text.toLowerCase().includes(text))
+      //       total.push(notes.note);
+      //   }
+      //   if (notes.children) {
+      //     for (let child of notes.children)
+      //       total.push(...this.recursText(child, text));
+      //   }
+      // }
+
       return total;
     },
     // 인풋창 포커스
@@ -265,17 +271,23 @@ export default {
     filteredCat() {
       const category = this.searchCat.toLowerCase();
       if (this.searchCat.length < 1) return this.notesStore.categories;
-      const temp = this.notesStore.categories;
-      return temp.filter((cat) => String(cat).toLowerCase().includes(category));
+      return this.notesStore.categories.filter((cat) =>
+        String(cat).toLowerCase().includes(category)
+      );
     },
     // 새로운 투두 텍스트 입력할 때 밑에 비슷한 이전 입력 값들 보여주는 함수
     filteredText() {
       const ret = [];
       const text = this.noteToSave.text.toLowerCase();
-      const allNotes = this.main.getAllNotes();
-      for (let notes of allNotes) ret.push(...this.recursText(notes, text));
+      for (let notes of this.notesStore.allNotes) {
+        ret.push(
+          ...notes.objList.filter((obj) =>
+            obj.note.text.toLowerCase().includes(text)
+          )
+        );
+      }
       return ret.sort((a, b) => {
-        new Date(a.updated) > new Date(b.updated) ? 1 : -1;
+        new Date(a.note.updated) > new Date(b.note.updated) ? 1 : -1;
       });
     },
   },
