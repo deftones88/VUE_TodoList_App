@@ -26,6 +26,7 @@
               >
                 <h1
                   class="category_title"
+                  v-if="selectedTab === 'All'"
                   :style="{ margin: '1.5em 2em 0', display: 'flex' }"
                 >
                   {{ notes.category }}
@@ -156,15 +157,11 @@ export default {
       const text = this.searchKey.toLowerCase();
 
       this.filterNotes(text, 1);
-
-      // const getNote = this.getAllNotes();
-      // for (let notes of getNote) ret.push(...this.recursText(notes, text));
-      // this.allNotes = ret;
     },
     // 단어 검색창의 X 누르면 초기화하는 함수
     searchInputDel() {
       this.searchKey = "";
-      this.updateList();
+      this.filterNotes();
     },
   },
   mounted() {
@@ -181,6 +178,7 @@ export default {
       "filter",
       "filteredNotes",
       "filteredLength",
+      "selectedTab",
     ]),
   },
   watch: {

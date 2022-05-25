@@ -42,23 +42,20 @@ export const useStore = defineStore("savedNotes", {
         } else {
           this.filteredNotes = this.allNotes;
         }
-        console.log(this.filteredNotes);
       } else if (option === 1) {
-        const ret = [];
+        const objList = [];
         this.allNotes.filter((el) => {
           if (this.selectedTab === "All" || el.category === this.selectedTab) {
             el.objList.filter((e) => {
-              console.log(e.note.text);
               if (e.note.text.toLowerCase().includes(value)) {
-                const objList = [];
                 objList.push(e);
-                ret.push({ objList: objList });
               }
             });
           }
         });
+        const ret = [];
+        ret.push({ objList: objList });
         this.filteredNotes = ret;
-        console.log(this.filteredNotes);
       }
     },
     saveAllNotes() {
