@@ -261,9 +261,9 @@ export default {
     },
     // 인풋창 포커스
     inputFocus(id) {
-      this.$nextTick(() => {
-        document.getElementById(`textArea-${id}`).focus();
-      });
+      // this.$nextTick(() => {
+      //   document.getElementById(`textArea-${id}`).focus();
+      // });
     },
   },
   computed: {

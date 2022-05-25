@@ -26,19 +26,20 @@
 </template>
 
 <script>
-import { mapActions } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
   name: "TabsWrapper",
   data() {
     return {
+      notesStore: useStore(),
       tabs: [],
       selected: "All",
     };
   },
   methods: {
-    ...mapActions(useStore, ["updateAllNotes", "updateFilter"]),
+    ...mapActions(useStore, ["updateAllNotes", "updateFilter", "updateTabs"]),
     selectTabWName(name) {
       this.tabs.forEach((tab) => {
         tab.isActive = tab.name === name;

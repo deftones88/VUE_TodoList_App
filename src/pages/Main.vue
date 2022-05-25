@@ -31,8 +31,8 @@
                   {{ notes.category }}
                 </h1>
                 <TreeItem
-                  v-for="obj in notes.objList"
-                  :key="obj.id + 'outer'"
+                  v-for="(obj, index) in notes.objList"
+                  :key="index"
                   :front="true"
                   :notes="obj.note"
                   :subs="obj.children"
@@ -53,8 +53,8 @@
                 :key="notes.id"
               >
                 <TreeItem
-                  v-for="obj in notes.objList"
-                  :key="obj.id + 'outer'"
+                  v-for="(obj, index) in notes.objList"
+                  :key="index"
                   :front="false"
                   :notes="obj.note"
                   :subs="obj.children"

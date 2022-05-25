@@ -1,12 +1,13 @@
 <template>
   <div class="todo__list-wrapper">
     <table class="todo__list-item" v-if="notes">
-      <tr
+      <!-- <tr
         class="todo__list-item-tr"
         @mouseenter="active = true"
         @mouseleave="active = false"
         :class="{ activeColor: active }"
-      >
+      > -->
+      <tr class="todo__list-item-tr">
         <!-- <td class="todo__list-item__category" v-if="front">
           <div>
             <span v-if="!depth"> {{ notes.category }}</span>
@@ -278,11 +279,11 @@ export default {
     },
     // 수정할 때 포커스 해주는 함수
     editFocus(id) {
-      this.$nextTick(() => {
-        setTimeout(() => {
-          document.getElementById(`editInput-${id}`).focus();
-        }, 200);
-      });
+      // this.$nextTick(() => {
+      //   setTimeout(() => {
+      //     document.getElementById(`editInput-${id}`).focus();
+      //   }, 200);
+      // });
     },
   },
   computed: {
