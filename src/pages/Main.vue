@@ -182,18 +182,6 @@ export default {
       "filteredNotes",
       "filteredLength",
     ]),
-    // filteredByCat() {
-    //   if (this.filter) {
-    //     return this.allNotes.filter((el) => el.category == this.filter);
-    //   }
-    //   return this.allNotes;
-    // },
-    // filteredLength() {
-    //   if (this.filteredByCat.length === 1)
-    //     return this.filteredByCat[0].objList.length;
-
-    //   return this.filteredByCat.length;
-    // },
   },
   watch: {
     filter() {

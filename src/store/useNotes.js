@@ -39,19 +39,26 @@ export const useStore = defineStore("savedNotes", {
           );
           if (this.filteredNotes.length === 1)
             this.filteredLength = this.filteredNotes[0].objList.length;
-          console.log("length", this.filteredLength);
         } else {
           this.filteredNotes = this.allNotes;
         }
+        console.log(this.filteredNotes);
       } else if (option === 1) {
         const ret = [];
         this.allNotes.filter((el) => {
-          el.objList.filter((e) => {
-            console.log(e.note.text);
-            if (e.note.text.toLowerCase().includes(value)) ret.push(e);
-          });
+          if (this.selectedTab === "All" || el.category === this.selectedTab) {
+            el.objList.filter((e) => {
+              console.log(e.note.text);
+              if (e.note.text.toLowerCase().includes(value)) {
+                const objList = [];
+                objList.push(e);
+                ret.push({ objList: objList });
+              }
+            });
+          }
         });
         this.filteredNotes = ret;
+        console.log(this.filteredNotes);
       }
     },
     saveAllNotes() {
