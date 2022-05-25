@@ -5,7 +5,7 @@
         <li
           v-for="(tab, index) in tabs"
           :key="index"
-          :class="{ 'is-active': tab.isActive }"
+          :class="{ 'is-active': tab.name == selected }"
         >
           <div
             class="nav-item"
@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       notesStore: useStore(),
-      tabs: [],
       selected: "All",
     };
   },
@@ -42,13 +41,11 @@ export default {
     ...mapActions(useStore, ["updateAllNotes", "updateFilter", "updateTabs"]),
     selectTabWName(name) {
       this.tabs.forEach((tab) => {
-        tab.isActive = tab.name === name;
         if (tab.name === name) this.selected = name;
       });
     },
     selectTab(selectedTab) {
       this.tabs.forEach((tab) => {
-        tab.isActive = tab.name === selectedTab.name;
         if (tab.name === selectedTab.name) this.selected = selectedTab.name;
       });
     },
@@ -60,9 +57,18 @@ export default {
       this.updateFilter(input);
     },
   },
-  created() {
-    this.tabs = this.$children;
+  mounted() {
+    const tabbers = [];
+    setTimeout(() => {
+      for (const tab of this.$children) {
+        tabbers.push({ name: tab.name, selected: tab.selected });
+      }
+      this.updateTabs(tabbers);
+    }, 100);
     this.$root.$refs.tabs = this;
+  },
+  computed: {
+    ...mapState(useStore, ["tabs"]),
   },
 };
 </script>

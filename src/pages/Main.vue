@@ -85,9 +85,6 @@ export default {
   components: { TreeItem, InputItem, Tab, TabsWrapper },
   name: "Jhk",
   data() {
-    // const notesStore = useStore();
-    // const { allNotes, categories } = storeToRefs(notesStore);
-
     return {
       notesStore: useStore(),
       selected: null,
@@ -157,7 +154,6 @@ export default {
       // const getNote = this.getAllNotes();
       // for (let notes of getNote) ret.push(...this.recursText(notes, text));
       // this.allNotes = ret;
-      this.selectedCat = "default";
     },
     // 단어 검색창의 X 누르면 초기화하는 함수
     searchInputDel() {

@@ -6,6 +6,7 @@ export const useStore = defineStore("savedNotes", {
     categories: [],
     local: "notes_app",
     filter: "",
+    tabs: [],
   }),
   getters: {
     categoriesCount() {
@@ -32,6 +33,9 @@ export const useStore = defineStore("savedNotes", {
         this.local,
         JSON.stringify(this.allNotes, this.getCircularReplacer())
       );
+    },
+    updateTabs(value) {
+      this.tabs = value;
     },
     updateFilter(input) {
       this.filter = input;
