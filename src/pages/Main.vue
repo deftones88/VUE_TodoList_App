@@ -20,7 +20,7 @@
             <Tab name="All" selected="true">
               <div
                 class="tree_wrapper"
-                v-for="notes in filteredByCat"
+                v-for="notes in filteredNotes"
                 :key="notes.id"
                 v-show="notes.objList.length"
               >
@@ -49,7 +49,7 @@
             >
               <div
                 class="tree_wrapper"
-                v-for="notes in filteredByCat"
+                v-for="notes in filteredNotes"
                 :key="notes.id"
               >
                 <TreeItem
@@ -78,7 +78,7 @@ import InputItem from "@/components/InputItem.vue";
 import Tab from "@/components/Tab.vue";
 import TabsWrapper from "@/components/TabsWrapper.vue";
 
-import { mapActions } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
@@ -101,7 +101,11 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useStore, ["updateAllNotes", "updateCategories"]),
+    ...mapActions(useStore, [
+      "updateAllNotes",
+      "updateCategories",
+      "filterNotes",
+    ]),
     byteSize(val) {
       const len = new Blob([val]).size;
       return len;
@@ -117,18 +121,18 @@ export default {
       }
     },
     // localStorage에 저장된 data 가져오는 함수
-    getAllNotes() {
-      let notes = JSON.parse(localStorage.getItem("notesapp-notes") || "[]");
-      this.setParents(notes, null);
-      return notes.sort((a, b) => {
-        if (a.note.category > b.note.category) return 1;
+    // getAllNotes() {
+    //   let notes = JSON.parse(localStorage.getItem("notesapp-notes") || "[]");
+    //   this.setParents(notes, null);
+    //   return notes.sort((a, b) => {
+    //     if (a.note.category > b.note.category) return 1;
 
-        if (a.note.category < b.note.category) return -1;
+    //     if (a.note.category < b.note.category) return -1;
 
-        if (new Date(a.note.updated) > new Date(b.note.updated)) return 1;
-        if (new Date(a.note.updated) < new Date(b.note.updated)) return -1;
-      });
-    },
+    //     if (new Date(a.note.updated) > new Date(b.note.updated)) return 1;
+    //     if (new Date(a.note.updated) < new Date(b.note.updated)) return -1;
+    //   });
+    // },
     // input 창 한 번에 하나만 뜨도록 selected 변수 정해주는 함수
     // InputItem에서 호출함
     setSelected(num) {
@@ -149,8 +153,10 @@ export default {
     },
     // 단어로 필터해서 리스트 뿌리는 함수
     searchList() {
-      let ret = [];
       const text = this.searchKey.toLowerCase();
+
+      this.filterNotes(text, 1);
+
       // const getNote = this.getAllNotes();
       // for (let notes of getNote) ret.push(...this.recursText(notes, text));
       // this.allNotes = ret;
@@ -163,25 +169,35 @@ export default {
   },
   mounted() {
     this.updateAllNotes();
+    this.filterNotes();
     this.updateCategories();
   },
   created() {
     this.$root.$refs.main = this;
   },
   computed: {
-    filteredByCat() {
-      if (this.notesStore.filter) {
-        return this.notesStore.allNotes.filter(
-          (el) => el.category == this.notesStore.filter
-        );
-      }
-      return this.notesStore.allNotes;
-    },
-    filteredLength() {
-      if (this.filteredByCat.length === 1)
-        return this.filteredByCat[0].objList.length;
+    ...mapState(useStore, [
+      "allNotes",
+      "filter",
+      "filteredNotes",
+      "filteredLength",
+    ]),
+    // filteredByCat() {
+    //   if (this.filter) {
+    //     return this.allNotes.filter((el) => el.category == this.filter);
+    //   }
+    //   return this.allNotes;
+    // },
+    // filteredLength() {
+    //   if (this.filteredByCat.length === 1)
+    //     return this.filteredByCat[0].objList.length;
 
-      return this.filteredByCat.length;
+    //   return this.filteredByCat.length;
+    // },
+  },
+  watch: {
+    filter() {
+      this.filterNotes();
     },
   },
 };

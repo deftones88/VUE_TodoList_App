@@ -3,10 +3,13 @@ import { defineStore } from "pinia";
 export const useStore = defineStore("savedNotes", {
   state: () => ({
     allNotes: [],
+    filteredNotes: [],
     categories: [],
     local: "notes_app",
     filter: "",
+    filteredLength: 0,
     tabs: [],
+    selectedTab: "All",
   }),
   getters: {
     categoriesCount() {
@@ -28,6 +31,29 @@ export const useStore = defineStore("savedNotes", {
       }
       this.categories = ret;
     },
+    filterNotes(value, option = 0) {
+      if (!option) {
+        if (this.filter) {
+          this.filteredNotes = this.allNotes.filter(
+            (el) => el.category == this.filter
+          );
+          if (this.filteredNotes.length === 1)
+            this.filteredLength = this.filteredNotes[0].objList.length;
+          console.log("length", this.filteredLength);
+        } else {
+          this.filteredNotes = this.allNotes;
+        }
+      } else if (option === 1) {
+        const ret = [];
+        this.allNotes.filter((el) => {
+          el.objList.filter((e) => {
+            console.log(e.note.text);
+            if (e.note.text.toLowerCase().includes(value)) ret.push(e);
+          });
+        });
+        this.filteredNotes = ret;
+      }
+    },
     saveAllNotes() {
       localStorage.setItem(
         this.local,
@@ -36,6 +62,11 @@ export const useStore = defineStore("savedNotes", {
     },
     updateTabs(value) {
       this.tabs = value;
+    },
+    selectTab(value) {
+      this.tabs.forEach((tab) => {
+        if (tab.name === value.name) this.selectedTab = value.name;
+      });
     },
     updateFilter(input) {
       this.filter = input;

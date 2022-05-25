@@ -5,7 +5,7 @@
         <li
           v-for="(tab, index) in tabs"
           :key="index"
-          :class="{ 'is-active': tab.name == selected }"
+          :class="{ 'is-active': tab.name == selectedTab }"
         >
           <div
             class="nav-item"
@@ -34,19 +34,18 @@ export default {
   data() {
     return {
       notesStore: useStore(),
-      selected: "All",
     };
   },
   methods: {
-    ...mapActions(useStore, ["updateAllNotes", "updateFilter", "updateTabs"]),
+    ...mapActions(useStore, [
+      "updateAllNotes",
+      "updateFilter",
+      "updateTabs",
+      "selectTab",
+    ]),
     selectTabWName(name) {
       this.tabs.forEach((tab) => {
         if (tab.name === name) this.selected = name;
-      });
-    },
-    selectTab(selectedTab) {
-      this.tabs.forEach((tab) => {
-        if (tab.name === selectedTab.name) this.selected = selectedTab.name;
       });
     },
     updateCatFilter(input) {
@@ -68,7 +67,7 @@ export default {
     this.$root.$refs.tabs = this;
   },
   computed: {
-    ...mapState(useStore, ["tabs"]),
+    ...mapState(useStore, ["tabs", "selectedTab"]),
   },
 };
 </script>
