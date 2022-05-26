@@ -166,7 +166,7 @@ export default {
       // }
     },
     // 차일드로 투두 만드는 함수
-    makeFolder(notes, val = 0) {
+    makeFolder(val = 0) {
       if (!val) {
         this.main.setSelected(this.notes.id);
         this.input.inputFocus(this.notes.id);
