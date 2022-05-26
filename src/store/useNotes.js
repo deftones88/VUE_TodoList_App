@@ -14,11 +14,14 @@ export const useStore = defineStore("savedNotes", {
     selectedCat: null,
   }),
   getters: {
-    categoriesCount() {
-      return this.categories.length;
+    categoriesCount(state) {
+      return state.categories.length;
     },
   },
   actions: {
+    incrementIndex() {
+      return this.index++;
+    },
     updateAllNotes() {
       const notes = JSON.parse(localStorage.getItem(this.local) || "[]");
       this.allNotes = notes.sort((a, b) => {

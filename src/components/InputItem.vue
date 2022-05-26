@@ -103,6 +103,7 @@ export default {
       "selectTab",
       "filterNotes",
       "changeDate",
+      "incrementIndex",
     ]),
     // pop up
     showPopup() {
@@ -184,8 +185,9 @@ export default {
       if (this.noteToSave.text.length < 1) return;
       // 투두 값 대입
       this.noteToSave.category = this.selectedCat;
-      this.noteToSave.id = this.index++;
-      console.log("index", this.index);
+      console.log("cat", this.noteToSave.category);
+      this.noteToSave.id = this.incrementIndex();
+      console.log("id", this.noteToSave.id);
       this.noteToSave.updated = new Date().toISOString();
       // 투두 저장
       this.saveNewNote(this.noteToSave);
@@ -218,13 +220,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(useStore, [
-      "selectedCat",
-      "selectedTab",
-      "local",
-      "allNotes",
-      "index",
-    ]),
+    ...mapState(useStore, ["selectedCat", "selectedTab", "local", "allNotes"]),
     // 새 카테고리 쓸 때 밑에 비슷한 거 보여주는 함수
     filteredCat() {
       const category = this.searchCat.toLowerCase();
