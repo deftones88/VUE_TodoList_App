@@ -82,6 +82,7 @@ export const useStore = defineStore("savedNotes", {
         this.selectTab({ name: this.selectedCat });
       } else {
         this.selectTab({ name: "All" });
+        this.selectedCat = null;
         this.updateFilter(0);
       }
       this.updateAllNotes();

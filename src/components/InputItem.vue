@@ -165,7 +165,11 @@ export default {
       for (let item of items) {
         if (item.index === this.note.note.id) {
           if (!item.children) item.children = [];
-          item.children.push({ note: this.noteToSave, parents: item });
+          item.children.push({
+            note: this.noteToSave,
+            parents: item,
+            index: this.noteToSave.id,
+          });
           break;
         }
         if (item.children) this.makeChild(item.children);

@@ -53,17 +53,17 @@
         <td class="todo__list-item__folder">
           <span v-if="depth < 1">
             <span
-              @click="makeFolder(notes)"
+              @click="makeFolder()"
               v-show="notes && selected !== notes.id && !checked"
             >
               <img src="@/assets/plus-circle.svg" />
             </span>
-            <span @click="makeFolder(notes, 1)" v-show="showMatch && !checked">
+            <span @click="makeFolder(1)" v-show="showMatch && !checked">
               <img src="@/assets/plus-circle-dotted.svg" />
             </span>
           </span>
         </td>
-        <td class="todo__list-item__delete" @click="deleteNote(notes)">
+        <td class="todo__list-item__delete" @click="deleteNote()">
           <img src="@/assets/x-circle.svg" />
         </td>
         <td class="todo__list-item__fold">
@@ -120,9 +120,11 @@ export default {
   },
   methods: {
     ...mapActions(useStore, [
+      "updateAllNotes",
       "updateSelectedCat",
       "updateChild",
       "saveAllNotes",
+      "filterNotes",
       "changeDate",
     ]),
     // 수정용 제귀함수
@@ -142,26 +144,26 @@ export default {
     },
     // todo 수정용 함수
     editItem() {
-      // 수정하는 곳 focus
-      if (this.active) this.editFocus(this.notes.id);
-      // 수정 전에 원래 값 preText에 저장
-      if (!this.isEdit) this.preText = this.notes.text;
-      // 수정용 토글
-      this.isEdit = !this.isEdit;
-      // 앞뒤 공백 지우기
-      this.notes.text = this.notes.text.trim();
-      // 수정 끝났고 텍스트 바뀌었다면 함수 실행
-      if (!this.isEdit && this.notes.text !== this.preText) {
-        const allNotes = this.main.getAllNotes();
-        this.notes.updated = new Date().toISOString();
-        this.recurEdit(allNotes, this.notes);
-        localStorage.setItem(
-          "notesapp-notes",
-          JSON.stringify(allNotes, this.input.getCircularReplacer())
-        );
-        this.tabs.selectTabWName(this.tabs.selected);
-        // this.tabs.updateCatFilter(this.tabs.selected);
-      }
+      // // 수정하는 곳 focus
+      // if (this.active) this.editFocus(this.notes.id);
+      // // 수정 전에 원래 값 preText에 저장
+      // if (!this.isEdit) this.preText = this.notes.text;
+      // // 수정용 토글
+      // this.isEdit = !this.isEdit;
+      // // 앞뒤 공백 지우기
+      // this.notes.text = this.notes.text.trim();
+      // // 수정 끝났고 텍스트 바뀌었다면 함수 실행
+      // if (!this.isEdit && this.notes.text !== this.preText) {
+      //   const allNotes = this.main.getAllNotes();
+      //   this.notes.updated = new Date().toISOString();
+      //   this.recurEdit(allNotes, this.notes);
+      //   localStorage.setItem(
+      //     "notesapp-notes",
+      //     JSON.stringify(allNotes, this.input.getCircularReplacer())
+      //   );
+      //   this.tabs.selectTabWName(this.tabs.selected);
+      //   // this.tabs.updateCatFilter(this.tabs.selected);
+      // }
     },
     // 차일드로 투두 만드는 함수
     makeFolder(notes, val = 0) {
@@ -176,31 +178,38 @@ export default {
       // this.updateSelectedCat(notes.category);
     },
     // 투두 지울 때용 제귀
-    recurDelFunc(items, id, upper) {
-      // for (let item of items) {
-      //   if (item.note.id === id) {
-      //     items.splice(items.indexOf(item), 1);
-      //     // 칠드런 배열까지 지워줘야 폴더 접고 닫기 버튼이 안 뜬다
-      //     if (upper.children && upper.children.length === 0)
-      //       delete upper["children"];
-      //     break;
-      //   }
-      //   if (item.children) this.recurDelFunc(item.children, id, item);
-      // }
+    checkChildForDel(items) {
+      if (items.filter((item) => item.index === this.notes.id).length) {
+        const ret = items.filter((item) => item.index !== this.notes.id);
+        items = ret;
+        return items;
+      } else {
+        for (let item of items) {
+          let found;
+          if (item.children) found = this.checkChildForDel(item.children);
+          if (found) {
+            if (!found.length) delete item["children"];
+            else item.children = found;
+            return items;
+          }
+        }
+      }
     },
     // 투두 지우는 함수
-    async deleteNote(notes) {
+    async deleteNote(e) {
       const ret = await confirm("are you sure?");
       if (ret) {
-        const allNotes = this.notesStore.allNotes;
-        allNotes.find((el) => {
-          for (const object of el.objList) {
-            if (object.note === notes) {
-              el.objList.splice(el.objList.indexOf(object), 1);
-            }
+        this.allNotes.every((el) => {
+          if (el.category === this.notes.category) {
+            const filtered = this.checkChildForDel(el.objList);
+            el.objList = filtered;
+            return false;
           }
+          return true;
         });
         this.saveAllNotes();
+        this.updateAllNotes();
+        this.filterNotes();
         // this.recurDelFunc(allNotes, id, allNotes);
         // localStorage.setItem(
         //   "notesapp-notes",
