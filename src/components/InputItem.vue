@@ -151,25 +151,6 @@ export default {
       this.visibleCat = false;
       document.getElementsByClassName("todo__input")[0].focus();
     },
-    // 카테고리 속 투두 지울 때용 제귀
-    recurDelCatFunc(items, cat) {
-      let i = items.length;
-      while (--i > -1) {
-        if (items[i].note.category === cat) {
-          items.splice(i, 1);
-        }
-      }
-    },
-    // 카테고리 투두 지우는 함수
-    deleteCatNote(cat) {
-      const allNotes = this.main.getAllNotes();
-      this.recurDelCatFunc(allNotes, cat);
-
-      localStorage.setItem(
-        this.notesStore.local,
-        JSON.stringify(allNotes, this.getCircularReplacer())
-      );
-    },
     // 카테고리 삭제 함수
     async deleteCat(category) {
       const answer = confirm(
