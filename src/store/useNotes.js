@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 
 export const useStore = defineStore("savedNotes", {
   state: () => ({
-    index: 0,
     allNotes: [],
     filteredNotes: [],
     categories: [],
@@ -12,6 +11,7 @@ export const useStore = defineStore("savedNotes", {
     tabs: [],
     selectedTab: "All",
     selectedCat: null,
+    child: false,
   }),
   getters: {
     categoriesCount(state) {
@@ -19,9 +19,6 @@ export const useStore = defineStore("savedNotes", {
     },
   },
   actions: {
-    incrementIndex() {
-      return this.index++;
-    },
     updateAllNotes() {
       const notes = JSON.parse(localStorage.getItem(this.local) || "[]");
       this.allNotes = notes.sort((a, b) => {
@@ -73,9 +70,13 @@ export const useStore = defineStore("savedNotes", {
       );
     },
     saveNewNote(note) {
-      const found = this.allNotes.find((el) => el.category == this.selectedCat);
-      if (!found.objList) found.objList = [];
-      found.objList.push({ note: note, id: note.index });
+      if (note) {
+        const found = this.allNotes.find(
+          (el) => el.category == this.selectedCat
+        );
+        if (!found.objList) found.objList = [];
+        found.objList.push({ note: note, index: note.id });
+      }
       this.saveAllNotes();
       if (this.selectedTab === this.selectedCat) {
         this.selectTab({ name: this.selectedCat });
@@ -89,11 +90,15 @@ export const useStore = defineStore("savedNotes", {
     updateTabs(value) {
       this.tabs = value;
     },
+    updateChild(value) {
+      this.child = value;
+    },
     selectTab(value) {
       this.tabs.forEach((tab) => {
         if (tab.name === value.name) {
           this.selectedTab = value.name;
-          this.selectedCat = value.name;
+          if (value.name === "All") this.selectedCat = "Category";
+          else this.selectedCat = value.name;
         }
       });
     },

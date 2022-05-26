@@ -121,6 +121,7 @@ export default {
   methods: {
     ...mapActions(useStore, [
       "updateSelectedCat",
+      "updateChild",
       "saveAllNotes",
       "changeDate",
     ]),
@@ -167,10 +168,11 @@ export default {
       if (!val) {
         this.main.setSelected(this.notes.id);
         this.input.inputFocus(this.notes.id);
+        this.updateChild(true);
       } else {
         this.main.setSelected(null);
+        this.updateChild(false);
       }
-      console.log(notes);
       // this.updateSelectedCat(notes.category);
     },
     // 투두 지울 때용 제귀
