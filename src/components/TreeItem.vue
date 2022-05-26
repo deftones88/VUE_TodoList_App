@@ -53,12 +53,12 @@
         <td class="todo__list-item__folder">
           <span v-if="depth < 3">
             <span
-              @click="makeFolder(0)"
+              @click="makeFolder(notes)"
               v-show="notes && selected !== notes.id && !checked"
             >
               <img src="@/assets/plus-circle.svg" />
             </span>
-            <span @click="makeFolder(1)" v-show="showMatch && !checked">
+            <span @click="makeFolder(notes, 1)" v-show="showMatch && !checked">
               <img src="@/assets/plus-circle-dotted.svg" />
             </span>
           </span>
@@ -119,33 +119,25 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useStore, ["saveAllNotes"]),
+    ...mapActions(useStore, [
+      "updateSelectedCat",
+      "saveAllNotes",
+      "changeDate",
+    ]),
     // 수정용 제귀함수
     recurEdit(allItems, item) {
-      for (let items of allItems) {
-        if (items.note.id === item.id) {
-          const newNode = {};
-          if (items.children) {
-            newNode["children"] = items.children;
-          }
-          newNode["note"] = item;
-          allItems.splice(allItems.indexOf(items), 1, newNode);
-          break;
-        }
-        if (items.children) this.updateChecked(items.children, item);
-      }
-    },
-    // 날짜 수정용 함수
-    changeDate(date) {
-      const ret = new Date(date).toLocaleString("ko-KR", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      return ret;
+      // for (let items of allItems) {
+      //   if (items.note.id === item.id) {
+      //     const newNode = {};
+      //     if (items.children) {
+      //       newNode["children"] = items.children;
+      //     }
+      //     newNode["note"] = item;
+      //     allItems.splice(allItems.indexOf(items), 1, newNode);
+      //     break;
+      //   }
+      //   if (items.children) this.updateChecked(items.children, item);
+      // }
     },
     // todo 수정용 함수
     editItem() {
@@ -171,26 +163,28 @@ export default {
       }
     },
     // 차일드로 투두 만드는 함수
-    makeFolder(val) {
+    makeFolder(notes, val = 0) {
       if (!val) {
         this.main.setSelected(this.notes.id);
         this.input.inputFocus(this.notes.id);
       } else {
         this.main.setSelected(null);
       }
+      console.log(notes);
+      // this.updateSelectedCat(notes.category);
     },
     // 투두 지울 때용 제귀
     recurDelFunc(items, id, upper) {
-      for (let item of items) {
-        if (item.note.id === id) {
-          items.splice(items.indexOf(item), 1);
-          // 칠드런 배열까지 지워줘야 폴더 접고 닫기 버튼이 안 뜬다
-          if (upper.children && upper.children.length === 0)
-            delete upper["children"];
-          break;
-        }
-        if (item.children) this.recurDelFunc(item.children, id, item);
-      }
+      // for (let item of items) {
+      //   if (item.note.id === id) {
+      //     items.splice(items.indexOf(item), 1);
+      //     // 칠드런 배열까지 지워줘야 폴더 접고 닫기 버튼이 안 뜬다
+      //     if (upper.children && upper.children.length === 0)
+      //       delete upper["children"];
+      //     break;
+      //   }
+      //   if (item.children) this.recurDelFunc(item.children, id, item);
+      // }
     },
     // 투두 지우는 함수
     async deleteNote(notes) {
@@ -215,53 +209,53 @@ export default {
       }
     },
     // 완료된 항목 자식 부모도 상태 확인하는 함수 (work in progress)
-    checkAll(allItems, status) {
-      if (allItems === undefined || allItems === null) return;
-      let allDone = true;
-      for (let items of allItems) {
-        if (items === null) return;
-        if (items.note && items.note.status === false) {
-          allDone = false;
-          break;
-        }
-      }
+    // checkAll(allItems, status) {
+    //   if (allItems === undefined || allItems === null) return;
+    //   let allDone = true;
+    //   for (let items of allItems) {
+    //     if (items === null) return;
+    //     if (items.note && items.note.status === false) {
+    //       allDone = false;
+    //       break;
+    //     }
+    //   }
 
-      const parent = allItems[0].parents[0] ? allItems[0].parents[0] : null;
-      const gParent = parent ? parent.parents : null;
-      if (allDone && status) {
-        if (parent) parent.note.status = allDone;
-        this.checkAll(gParent, status);
-        // } else if (allDone && !status) {
-        //   this.checkAll(gParent, status);
-      } else {
-        if (parent) parent.note.status = allDone;
-      }
-      this.checkAll(allItems[0].parents, status);
-    },
+    //   const parent = allItems[0].parents[0] ? allItems[0].parents[0] : null;
+    //   const gParent = parent ? parent.parents : null;
+    //   if (allDone && status) {
+    //     if (parent) parent.note.status = allDone;
+    //     this.checkAll(gParent, status);
+    //     // } else if (allDone && !status) {
+    //     //   this.checkAll(gParent, status);
+    //   } else {
+    //     if (parent) parent.note.status = allDone;
+    //   }
+    //   this.checkAll(allItems[0].parents, status);
+    // },
     checkChild(items) {
-      const baby = items.children;
-      for (let child of baby) {
-        child.note.status = true;
-        if (child.children) this.checkChild(child);
-      }
+      // const baby = items.children;
+      // for (let child of baby) {
+      //   child.note.status = true;
+      //   if (child.children) this.checkChild(child);
+      // }
     },
     // 체크 상태 업뎃하는 함수
     updateChecked(allItems, item, status) {
-      for (let items of allItems) {
-        if (items.note.id === item.id) {
-          const newNode = {};
-          if (items.children) {
-            newNode["children"] = items.children;
-          }
-          if (items.parents) newNode["parents"] = items.parents;
-          newNode["note"] = item;
-          allItems.splice(allItems.indexOf(items), 1, newNode);
-          this.checkAll(allItems, status);
-          if (status && items.children) this.checkChild(items);
-          break;
-        }
-        if (items.children) this.updateChecked(items.children, item, status);
-      }
+      // for (let items of allItems) {
+      //   if (items.note.id === item.id) {
+      //     const newNode = {};
+      //     if (items.children) {
+      //       newNode["children"] = items.children;
+      //     }
+      //     if (items.parents) newNode["parents"] = items.parents;
+      //     newNode["note"] = item;
+      //     allItems.splice(allItems.indexOf(items), 1, newNode);
+      //     this.checkAll(allItems, status);
+      //     if (status && items.children) this.checkChild(items);
+      //     break;
+      //   }
+      //   if (items.children) this.updateChecked(items.children, item, status);
+      // }
     },
     // 체크하면 호출되는 함수
     onClickCheckbox(notes, e) {

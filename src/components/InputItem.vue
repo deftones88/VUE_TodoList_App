@@ -87,7 +87,6 @@ export default {
         updated: "",
         status: false,
       },
-      index: 0,
       popup: false, // 카테고리 삭제시 나오는 팝업
       main: this.$root.$refs.main,
       tabs: this.$root.$refs.tabs,
@@ -103,6 +102,7 @@ export default {
       "saveNewNote",
       "selectTab",
       "filterNotes",
+      "changeDate",
     ]),
     // pop up
     showPopup() {
@@ -110,18 +110,6 @@ export default {
       setTimeout(() => {
         this.popup = false;
       }, 1500);
-    },
-    // 날짜 수정용 함수
-    changeDate(date) {
-      const ret = new Date(date).toLocaleString("ko-KR", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      return ret;
     },
     // 투두 아이템 초기화 함수
     resetNoteToSave() {
@@ -135,16 +123,16 @@ export default {
       window.setTimeout(() => document.getElementById("input").focus(), 0);
     },
     // 차일드 만들어주는 재귀 함수
-    recurFunc(items) {
-      for (let item of items) {
-        if (item.id === this.note.id) {
-          if (!item.children) item.children = [];
-          item.children.push({ note: this.noteToSave, parents: item });
-          break;
-        }
-        if (item.children) this.recurFunc(item.children);
-      }
-    },
+    // recurFunc(items) {
+    //   for (let item of items) {
+    //     if (item.id === this.note.id) {
+    //       if (!item.children) item.children = [];
+    //       item.children.push({ note: this.noteToSave, parents: item });
+    //       break;
+    //     }
+    //     if (item.children) this.recurFunc(item.children);
+    //   }
+    // },
     // 카테고리 선택 함수
     selectCat(cat) {
       this.updateSelectedCat(cat);
@@ -197,30 +185,31 @@ export default {
       // 투두 값 대입
       this.noteToSave.category = this.selectedCat;
       this.noteToSave.id = this.index++;
+      console.log("index", this.index);
       this.noteToSave.updated = new Date().toISOString();
       // 투두 저장
       this.saveNewNote(this.noteToSave);
       this.resetNoteToSave();
     },
     // 새로운 투두 입력할 때 사용하는 제귀함수
-    recursText(item, text) {
-      let total = [];
-      if (item.objList.length) {
-        console.log(item.objList);
-      }
-      // for (let notes of item) {
-      //   if (notes.note && notes.note.text) {
-      //     if (notes.note.text.toLowerCase().includes(text))
-      //       total.push(notes.note);
-      //   }
-      //   if (notes.children) {
-      //     for (let child of notes.children)
-      //       total.push(...this.recursText(child, text));
-      //   }
-      // }
+    // recursText(item, text) {
+    //   let total = [];
+    //   if (item.objList.length) {
+    //     console.log(item.objList);
+    //   }
+    // for (let notes of item) {
+    //   if (notes.note && notes.note.text) {
+    //     if (notes.note.text.toLowerCase().includes(text))
+    //       total.push(notes.note);
+    //   }
+    //   if (notes.children) {
+    //     for (let child of notes.children)
+    //       total.push(...this.recursText(child, text));
+    //   }
+    // }
 
-      return total;
-    },
+    // return total;
+    // },
     // 인풋창 포커스
     inputFocus(id) {
       // this.$nextTick(() => {
@@ -229,7 +218,13 @@ export default {
     },
   },
   computed: {
-    ...mapState(useStore, ["selectedCat", "selectedTab", "local", "allNotes"]),
+    ...mapState(useStore, [
+      "selectedCat",
+      "selectedTab",
+      "local",
+      "allNotes",
+      "index",
+    ]),
     // 새 카테고리 쓸 때 밑에 비슷한 거 보여주는 함수
     filteredCat() {
       const category = this.searchCat.toLowerCase();

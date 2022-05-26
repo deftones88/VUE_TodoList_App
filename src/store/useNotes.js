@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 
 export const useStore = defineStore("savedNotes", {
   state: () => ({
+    index: 0,
     allNotes: [],
     filteredNotes: [],
     categories: [],
@@ -105,6 +106,17 @@ export const useStore = defineStore("savedNotes", {
         }
         return value;
       };
+    },
+    changeDate(date) {
+      const ret = new Date(date).toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      return ret;
     },
   },
 });
