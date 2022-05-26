@@ -22,7 +22,7 @@
             <input
               type="checkbox"
               ref="checkbox"
-              @click="onClickCheckbox($event)"
+              @click="onClickCheckbox(notes, $event)"
               :checked="notes.status"
             />
           </span>
@@ -97,7 +97,7 @@
 
 <script>
 import InputItem from "./InputItem.vue";
-import { mapActions } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
@@ -264,17 +264,28 @@ export default {
       }
     },
     // 체크하면 호출되는 함수
-    onClickCheckbox(e) {
-      const allNotes = this.main.getAllNotes();
-      this.checked = e.target.checked;
-      this.notes.status = this.checked;
-      this.notes.updated = new Date().toISOString();
-      this.updateChecked(allNotes, this.notes, this.checked);
-      localStorage.setItem(
-        "notesapp-notes",
-        JSON.stringify(allNotes, this.input.getCircularReplacer())
-      );
-      this.tabs.selectTabWName(this.tabs.selected);
+    onClickCheckbox(notes, e) {
+      console.log("notes", notes, e.target);
+      let ret;
+      this.allNotes.filter((el) => {
+        if (el.category === notes.category) {
+          ret = el.objList.find((e) => {
+            console.log(e.note, e.note === notes);
+            return e.note === notes;
+          });
+        }
+      });
+      console.log("ret", ret);
+      // const allNotes = this.main.getAllNotes();
+      // this.checked = e.target.checked;
+      // this.notes.status = this.checked;
+      // this.notes.updated = new Date().toISOString();
+      // this.updateChecked(allNotes, this.notes, this.checked);
+      // localStorage.setItem(
+      //   "notesapp-notes",
+      //   JSON.stringify(allNotes, this.input.getCircularReplacer())
+      // );
+      // this.tabs.selectTabWName(this.tabs.selected);
       // this.tabs.updateCatFilter(this.tabs.selected);
     },
     // 수정할 때 포커스 해주는 함수
@@ -287,6 +298,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(useStore, ["allNotes"]),
     isFolder() {
       return this.subs && this.subs.length;
     },

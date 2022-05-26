@@ -10,6 +10,7 @@ export const useStore = defineStore("savedNotes", {
     filteredLength: 0,
     tabs: [],
     selectedTab: "All",
+    selectedCat: null,
   }),
   getters: {
     categoriesCount() {
@@ -30,6 +31,9 @@ export const useStore = defineStore("savedNotes", {
         ret.push(obj.category);
       }
       this.categories = ret;
+    },
+    updateSelectedCat(value) {
+      this.selectedCat = value;
     },
     filterNotes(value, option = 0) {
       if (!option) {
@@ -64,12 +68,29 @@ export const useStore = defineStore("savedNotes", {
         JSON.stringify(this.allNotes, this.getCircularReplacer())
       );
     },
+    saveNewNote(note) {
+      const found = this.allNotes.find((el) => el.category == this.selectedCat);
+      if (!found.objList) found.objList = [];
+      found.objList.push({ note: note, id: note.index });
+      this.saveAllNotes();
+      if (this.selectedTab === this.selectedCat) {
+        this.selectTab({ name: this.selectedCat });
+      } else {
+        this.selectTab({ name: "All" });
+        this.updateFilter(0);
+      }
+      this.updateAllNotes();
+      this.filterNotes();
+    },
     updateTabs(value) {
       this.tabs = value;
     },
     selectTab(value) {
       this.tabs.forEach((tab) => {
-        if (tab.name === value.name) this.selectedTab = value.name;
+        if (tab.name === value.name) {
+          this.selectedTab = value.name;
+          this.selectedCat = value.name;
+        }
       });
     },
     updateFilter(input) {

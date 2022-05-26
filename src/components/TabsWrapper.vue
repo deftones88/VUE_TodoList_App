@@ -55,19 +55,28 @@ export default {
       }
       this.updateFilter(input);
     },
+    renderTabs() {
+      const tabbers = [];
+      setTimeout(() => {
+        for (const tab of this.$children) {
+          tabbers.push({ name: tab.name, selected: tab.selected });
+        }
+        this.updateTabs(tabbers);
+      }, 100);
+    },
   },
   mounted() {
-    const tabbers = [];
-    setTimeout(() => {
-      for (const tab of this.$children) {
-        tabbers.push({ name: tab.name, selected: tab.selected });
-      }
-      this.updateTabs(tabbers);
-    }, 100);
+    this.renderTabs();
     this.$root.$refs.tabs = this;
   },
   computed: {
-    ...mapState(useStore, ["tabs", "selectedTab"]),
+    ...mapState(useStore, ["tabs", "selectedTab", "categories"]),
+  },
+  watch: {
+    categories() {
+      // 카테고리 업뎃 때마다 탭 추가
+      this.renderTabs();
+    },
   },
 };
 </script>

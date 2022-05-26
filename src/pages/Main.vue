@@ -14,7 +14,7 @@
           </span>
         </div>
       </div>
-      <div class="tabs-wrapper" v-show="notesStore.categories">
+      <div class="tabs-wrapper" v-show="categories.length">
         <div>
           <TabsWrapper>
             <Tab name="All" selected="true">
@@ -44,8 +44,8 @@
               </div>
             </Tab>
             <Tab
-              v-for="(cat, index) in notesStore.categories"
-              :key="index"
+              v-for="(cat, index) in categories"
+              :key="index + categories.length"
               :name="cat"
             >
               <div
@@ -179,6 +179,7 @@ export default {
       "filteredNotes",
       "filteredLength",
       "selectedTab",
+      "categories",
     ]),
   },
   watch: {
