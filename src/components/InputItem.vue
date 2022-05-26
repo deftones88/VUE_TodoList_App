@@ -171,11 +171,16 @@ export default {
       );
     },
     // 카테고리 삭제 함수
-    async deleteCat(name) {
+    async deleteCat(category) {
       const answer = confirm(
         "this will erase all tasks included in this category"
       );
       if (answer) {
+        const newNotes = this.allNotes.filter((el) => el.category !== category);
+        this.saveAllNotes(newNotes);
+        this.updateAllNotes();
+        this.updateCategories();
+        this.filterNotes();
       }
     },
     // 카테고리 추가 함수
@@ -198,17 +203,21 @@ export default {
     },
     // 투두 저장
     saveNote() {
+      // 카테고리 지정 안 할 시 경고
       if (!(this.selectedCat || this.note)) {
         alert("Choose a category");
         return;
       }
       // if (!this.selectedCat) this.updateSelectedCat(this.note.note.category);
 
+      // 텍스트 공백 확인
       this.noteToSave.text = this.noteToSave.text.trim();
       if (this.noteToSave.text.length < 1) return;
+      // 투두 값 대입
       this.noteToSave.category = this.selectedCat;
       this.noteToSave.id = this.index++;
       this.noteToSave.updated = new Date().toISOString();
+      // 투두 저장
       this.saveNewNote(this.noteToSave);
       this.resetNoteToSave();
     },

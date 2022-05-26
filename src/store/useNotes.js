@@ -62,10 +62,10 @@ export const useStore = defineStore("savedNotes", {
         this.filteredNotes = ret;
       }
     },
-    saveAllNotes() {
+    saveAllNotes(value = this.allNotes) {
       localStorage.setItem(
         this.local,
-        JSON.stringify(this.allNotes, this.getCircularReplacer())
+        JSON.stringify(value, this.getCircularReplacer())
       );
     },
     saveNewNote(note) {
