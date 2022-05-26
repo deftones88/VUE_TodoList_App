@@ -51,7 +51,7 @@
           </span>
         </td>
         <td class="todo__list-item__folder">
-          <span v-if="depth < 3">
+          <span v-if="depth < 1">
             <span
               @click="makeFolder(notes)"
               v-show="notes && selected !== notes.id && !checked"
