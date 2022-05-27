@@ -98,6 +98,7 @@ export default {
       "updateAllNotes",
       "updateCategories",
       "updateFilter",
+      "updateSelectedTask",
       "updateSelectedCat",
       "updateChild",
       "updateVisibleCat",
@@ -219,7 +220,7 @@ export default {
       }
       this.resetNoteToSave();
       this.updateChild(false);
-      this.main.selected = null;
+      this.updateSelectedTask(null);
     },
     // 새로운 투두 입력할 때 사용하는 제귀함수
     findText(items, text) {

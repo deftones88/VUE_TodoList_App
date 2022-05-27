@@ -116,15 +116,14 @@ export default {
       preText: "",
       active: false,
       cat: null,
-      main: this.$root.$refs.main,
       input: this.$root.$refs.input,
-      tabs: this.$root.$refs.tabs,
     };
   },
   methods: {
     ...mapActions(useStore, [
       "updateAllNotes",
       "updateSelectedCat",
+      "updateSelectedTask",
       "updateChild",
       "saveAllNotes",
       "filterNotes",
@@ -178,11 +177,11 @@ export default {
     // 차일드로 투두 만드는 함수
     makeFolder(val = 0) {
       if (!val) {
-        this.main.setSelected(this.notes.id);
+        this.updateSelectedTask(this.notes.id);
         this.input.inputFocus(this.notes.id);
         this.updateChild(true);
       } else {
-        this.main.setSelected(null);
+        this.updateSelectedTask(null);
         this.updateChild(false);
       }
       // this.updateSelectedCat(notes.category);

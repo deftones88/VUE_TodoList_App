@@ -9,6 +9,7 @@ export const useStore = defineStore("savedNotes", {
     filter: "", // filter for allNotes
     filteredLength: 0,
     tabs: [],
+    selectedTask: null,
     selectedTab: "All",
     selectedCat: null,
     visibleCat: false, // category dropdown toggle
@@ -33,6 +34,9 @@ export const useStore = defineStore("savedNotes", {
         ret.push(obj.category);
       }
       this.categories = ret;
+    },
+    updateSelectedTask(value) {
+      this.selectedTask = value;
     },
     updateSelectedCat(value) {
       this.selectedCat = value;

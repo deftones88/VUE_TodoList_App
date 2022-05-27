@@ -46,11 +46,6 @@ export default {
       "updateVisibleCat",
       "selectTab",
     ]),
-    selectTabWName(name) {
-      this.tabs.forEach((tab) => {
-        if (tab.name === name) this.selected = name;
-      });
-    },
     updateCatFilter(input) {
       if (input === "All") {
         this.updateFilter(0);
@@ -74,7 +69,12 @@ export default {
     this.$root.$refs.tabs = this;
   },
   computed: {
-    ...mapState(useStore, ["tabs", "selectedTab", "categories"]),
+    ...mapState(useStore, [
+      "tabs",
+      "selectedTab",
+      "categories",
+      "selectedTask",
+    ]),
   },
   watch: {
     categories() {
