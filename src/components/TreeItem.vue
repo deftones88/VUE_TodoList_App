@@ -234,6 +234,7 @@ export default {
         if (this.checked === true) {
           for (let child of editable.children) {
             child.note.status = true;
+            child.note.updated = new Date().toISOString();
           }
         }
       } else {
@@ -249,6 +250,7 @@ export default {
             }
             if (count === item.children.length) {
               item.note.status = true;
+              item.note.updated = new Date().toISOString();
             } else {
               item.note.status = false;
             }
