@@ -28,11 +28,7 @@
                 :key="notes.id"
                 v-show="notes.objList.length"
               >
-                <h1
-                  class="category_title"
-                  v-if="selectedTab === 'All'"
-                  :style="{ margin: '1.5em 2em 0', display: 'flex' }"
-                >
+                <h1 class="category_title" v-if="selectedTab === 'All'">
                   {{ notes.category }}
                 </h1>
                 <TreeItem
@@ -213,9 +209,6 @@ export default {
   width: 800px;
   min-height: 250px;
 }
-.tree_wrapper {
-  padding-top: 1em;
-}
 .filtered {
   display: flex;
   /* justify-content: space-between; */
@@ -226,6 +219,16 @@ export default {
 }
 .filtered > select {
   padding: 0.5em;
+}
+.tabs-wrapper {
+  margin-top: 1em;
+}
+.tree_wrapper {
+  margin-bottom: 2em;
+}
+.category_title {
+  margin: 1em 1em 0.5em;
+  text-align: left;
 }
 .searchInput {
   position: relative;
@@ -244,8 +247,5 @@ export default {
   margin-top: 3em;
   font-size: 1.5em;
   color: rgb(145, 144, 144);
-}
-.tabs-wrapper {
-  margin-top: 1em;
 }
 </style>
