@@ -174,11 +174,17 @@ export default {
         this.filterNotes();
       }
     },
+
+    inputFocus(id) {
+      this.$nextTick(() => {
+        document.getElementById(`textArea-${id}`).focus();
+      });
+    },
     // 차일드로 투두 만드는 함수
     makeFolder(val = 0) {
       if (!val) {
         this.updateSelectedTask(this.notes.id);
-        this.input.inputFocus(this.notes.id);
+        this.inputFocus(this.notes.id);
         this.updateChild(true);
       } else {
         this.updateSelectedTask(null);

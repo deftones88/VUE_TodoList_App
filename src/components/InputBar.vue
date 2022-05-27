@@ -246,12 +246,6 @@ export default {
 
       return total;
     },
-    // 인풋창 포커스
-    inputFocus(id) {
-      this.$nextTick(() => {
-        document.getElementById(`textArea-${id}`).focus();
-      });
-    },
   },
   computed: {
     ...mapState(useStore, [
@@ -286,7 +280,6 @@ export default {
   created() {
     this.updateAllNotes();
     this.updateCategories();
-    this.$root.$refs.input = this;
   },
 };
 </script>
