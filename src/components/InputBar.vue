@@ -188,12 +188,19 @@ export default {
       if (this.noteToSave.text.length < 1) return;
       // 투두 값 대입
       this.noteToSave.category = this.selectedCat;
-      this.noteToSave.id = parseInt(
-        Math.ceil(Math.random() * Date.now())
+      if (this.child) {
+        this.noteToSave.id =
+          this.note.note.id +
+          "_" +
+          (Math.random() * 100000)
+            .toString()
+            .substring(Math.random(2), Math.random() * 3 + 2);
+      } else {
+        this.noteToSave.id = Math.ceil(Math.random() * Date.now())
           .toPrecision(16)
           .toString()
-          .replace(".", "")
-      );
+          .replace(".", "");
+      }
       this.noteToSave.updated = new Date().toISOString();
       if (this.child) {
         this.allNotes.find((el) => {

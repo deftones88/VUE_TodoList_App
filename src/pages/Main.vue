@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="todo_wrapper">
-      <InputItem :note="null"></InputItem>
+      <InputBar :note="null"></InputBar>
       <div class="filtered">
         <div class="searchInput">
           <input
@@ -75,7 +75,7 @@
 
 <script>
 import TreeItem from "@/components/TreeItem.vue";
-import InputItem from "@/components/InputItem.vue";
+import InputBar from "@/components/InputBar.vue";
 import Tab from "@/components/Tab.vue";
 import TabsWrapper from "@/components/TabsWrapper.vue";
 
@@ -83,7 +83,7 @@ import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
-  components: { TreeItem, InputItem, Tab, TabsWrapper },
+  components: { TreeItem, InputBar, Tab, TabsWrapper },
   name: "Jhk",
   data() {
     return {

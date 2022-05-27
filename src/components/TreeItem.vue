@@ -46,7 +46,8 @@
           {{ changeDate(notes.updated) }}
         </td>
         <td class="todo__list-item__edit">
-          <span @click="editItem" v-show="active">
+          <!-- <span @click="editItem" v-show="active"> -->
+          <span @click="editItem">
             <img src="@/assets/pencil.svg" />
           </span>
         </td>
@@ -79,7 +80,7 @@
         </td>
       </tr>
     </table>
-    <InputItem v-show="showMatch" :note="upper"></InputItem>
+    <InputBar v-show="showMatch" :note="upper"></InputBar>
     <TreeItem
       v-for="sub in subs"
       :key="notes.id + sub.note.id"
@@ -96,12 +97,12 @@
 </template>
 
 <script>
-import InputItem from "./InputItem.vue";
+import InputBar from "./InputBar.vue";
 import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
-  components: { InputItem },
+  components: { InputBar },
   name: "TreeItem",
   props: ["front", "subs", "notes", "upper", "depth", "selected"],
   data() {
@@ -128,42 +129,55 @@ export default {
       "changeDate",
     ]),
     // 수정용 제귀함수
-    recurEdit(allItems, item) {
-      // for (let items of allItems) {
-      //   if (items.note.id === item.id) {
-      //     const newNode = {};
-      //     if (items.children) {
-      //       newNode["children"] = items.children;
-      //     }
-      //     newNode["note"] = item;
-      //     allItems.splice(allItems.indexOf(items), 1, newNode);
-      //     break;
-      //   }
-      //   if (items.children) this.updateChecked(items.children, item);
-      // }
+    checkChildForEdit(items) {
+      const editable = items.find((item) => item.index === this.notes.id);
+      console.log("editable: ", editable);
+      if (editable) {
+        editable.note.text = this.notes.text;
+        editable.note.updated = new Date().toISOString();
+        items = editable;
+        return items;
+      } else {
+        for (let item of items) {
+          let found;
+          if (item.children) found = this.checkChildForDel(item.children);
+          if (found) {
+            item.children = found;
+            return items;
+          }
+        }
+      }
     },
     // todo 수정용 함수
     editItem() {
-      // // 수정하는 곳 focus
-      // if (this.active) this.editFocus(this.notes.id);
-      // // 수정 전에 원래 값 preText에 저장
-      // if (!this.isEdit) this.preText = this.notes.text;
-      // // 수정용 토글
-      // this.isEdit = !this.isEdit;
-      // // 앞뒤 공백 지우기
-      // this.notes.text = this.notes.text.trim();
-      // // 수정 끝났고 텍스트 바뀌었다면 함수 실행
-      // if (!this.isEdit && this.notes.text !== this.preText) {
-      //   const allNotes = this.main.getAllNotes();
-      //   this.notes.updated = new Date().toISOString();
-      //   this.recurEdit(allNotes, this.notes);
-      //   localStorage.setItem(
-      //     "notesapp-notes",
-      //     JSON.stringify(allNotes, this.input.getCircularReplacer())
-      //   );
-      //   this.tabs.selectTabWName(this.tabs.selected);
-      //   // this.tabs.updateCatFilter(this.tabs.selected);
-      // }
+      // 수정하는 곳 focus
+      if (this.active) this.editFocus(this.notes.id);
+      // 수정 전에 원래 값 preText에 저장
+      if (!this.isEdit) this.preText = this.notes.text;
+      // 수정용 토글
+      this.isEdit = !this.isEdit;
+      // 앞뒤 공백 지우기
+      this.notes.text = this.notes.text.trim();
+      // 수정 끝났고 텍스트 바뀌었다면 함수 실행
+      if (!this.isEdit && this.notes.text !== this.preText) {
+        console.log(this.allNotes);
+        this.allNotes.every((el) => {
+          if (el.category === this.notes.category) {
+            const filtered = this.checkChildForEdit(el.objList);
+            el.objList = filtered;
+            return false;
+          }
+          return true;
+        });
+        // this.notes.updated = new Date().toISOString();
+        // this.checkChildForEdit(allNotes, this.notes);
+        // localStorage.setItem(
+        //   "notesapp-notes",
+        //   JSON.stringify(allNotes, this.input.getCircularReplacer())
+        // );
+        // this.tabs.selectTabWName(this.tabs.selected);
+        // this.tabs.updateCatFilter(this.tabs.selected);
+      }
     },
     // 차일드로 투두 만드는 함수
     makeFolder(val = 0) {
@@ -185,9 +199,8 @@ export default {
         return items;
       } else {
         for (let item of items) {
-          let found;
-          if (item.children) found = this.checkChildForDel(item.children);
-          if (found) {
+          if (item.index === this.notes.id.substring(0, item.index.length)) {
+            const found = this.checkChildForDel(item.children);
             if (!found.length) delete item["children"];
             else item.children = found;
             return items;
@@ -210,13 +223,6 @@ export default {
         this.saveAllNotes();
         this.updateAllNotes();
         this.filterNotes();
-        // this.recurDelFunc(allNotes, id, allNotes);
-        // localStorage.setItem(
-        //   "notesapp-notes",
-        //   JSON.stringify(allNotes, this.input.getCircularReplacer())
-        // );
-        // this.tabs.selectTabWName(this.tabs.selected);
-        // this.tabs.updateCatFilter(this.tabs.selected);
       }
     },
     // 완료된 항목 자식 부모도 상태 확인하는 함수 (work in progress)
