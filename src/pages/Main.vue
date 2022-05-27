@@ -41,8 +41,8 @@
                 </h1>
                 <div class="treeitem_wrapper">
                   <TreeItem
-                    v-for="(obj, index) in notes.objList"
-                    :key="index"
+                    v-for="obj in notes.objList"
+                    :key="obj.index"
                     :front="true"
                     :notes="obj.note"
                     :subs="obj.children"
@@ -65,8 +65,8 @@
               >
                 <div class="treeitem_wrapper">
                   <TreeItem
-                    v-for="(obj, index) in notes.objList"
-                    :key="index"
+                    v-for="obj in notes.objList"
+                    :key="obj.index"
                     :front="false"
                     :notes="obj.note"
                     :subs="obj.children"
