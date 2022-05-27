@@ -130,7 +130,7 @@ export default {
       "filterNotes",
       "changeDate",
     ]),
-    // 수정용 제귀함수
+    // 수정 시 자식 도는 함수
     checkChildForEdit(items) {
       const editable = items.find((item) => item.index === this.notes.id);
       if (editable) {
@@ -272,17 +272,14 @@ export default {
     },
     // 체크하면 호출되는 함수
     onClickCheckbox(notes, e) {
-      console.log("notes", notes, e.target);
       let ret;
       this.allNotes.filter((el) => {
         if (el.category === notes.category) {
           ret = el.objList.find((e) => {
-            console.log(e.note, e.note === notes);
             return e.note === notes;
           });
         }
       });
-      console.log("ret", ret);
       // const allNotes = this.main.getAllNotes();
       // this.checked = e.target.checked;
       // this.notes.status = this.checked;

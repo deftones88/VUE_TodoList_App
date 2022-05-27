@@ -128,19 +128,6 @@ export default {
         }
       }
     },
-    // localStorage에 저장된 data 가져오는 함수
-    // getAllNotes() {
-    //   let notes = JSON.parse(localStorage.getItem("notesapp-notes") || "[]");
-    //   this.setParents(notes, null);
-    //   return notes.sort((a, b) => {
-    //     if (a.note.category > b.note.category) return 1;
-
-    //     if (a.note.category < b.note.category) return -1;
-
-    //     if (new Date(a.note.updated) > new Date(b.note.updated)) return 1;
-    //     if (new Date(a.note.updated) < new Date(b.note.updated)) return -1;
-    //   });
-    // },
     // input 창 한 번에 하나만 뜨도록 selected 변수 정해주는 함수
     // InputItem에서 호출함
     setSelected(num) {

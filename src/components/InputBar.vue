@@ -143,6 +143,7 @@ export default {
         this.updateCategories();
         this.filterNotes();
         this.updateSelectedCat(0);
+        this.showPopup();
       }
     },
     // 카테고리 추가 함수
