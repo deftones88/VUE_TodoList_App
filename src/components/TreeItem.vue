@@ -1,13 +1,13 @@
 <template>
   <div class="todo__list-wrapper">
     <table class="todo__list-item" v-if="notes">
-      <!-- <tr
+      <tr
         class="todo__list-item-tr"
         @mouseenter="active = true"
         @mouseleave="active = false"
         :class="{ activeColor: active }"
-      > -->
-      <tr class="todo__list-item-tr">
+      >
+        <!-- <tr class="todo__list-item-tr"> -->
         <!-- <td class="todo__list-item__category" v-if="front">
           <div>
             <span v-if="!depth"> {{ notes.category }}</span>
@@ -39,6 +39,7 @@
             v-show="isEdit"
             v-model="notes.text"
             @keyup.enter="editItem"
+            @blur="isEdit = false"
           />
         </td>
         <td
@@ -48,8 +49,8 @@
           {{ changeDate(notes.updated) }}
         </td>
         <td class="todo__list-item__edit">
-          <!-- <span @click="editItem" v-show="active"> -->
-          <span @click="editItem">
+          <span @click="editItem" v-show="active">
+            <!-- <span @click="editItem"> -->
             <img src="@/assets/pencil.svg" />
           </span>
         </td>
@@ -116,7 +117,6 @@ export default {
       preText: "",
       active: false,
       cat: null,
-      input: this.$root.$refs.input,
     };
   },
   methods: {
@@ -174,7 +174,6 @@ export default {
         this.filterNotes();
       }
     },
-
     inputFocus(id) {
       this.$nextTick(() => {
         document.getElementById(`textArea-${id}`).focus();
@@ -299,11 +298,11 @@ export default {
     },
     // 수정할 때 포커스 해주는 함수
     editFocus(id) {
-      // this.$nextTick(() => {
-      //   setTimeout(() => {
-      //     document.getElementById(`editInput-${id}`).focus();
-      //   }, 200);
-      // });
+      this.$nextTick(() => {
+        setTimeout(() => {
+          document.getElementById(`editInput-${id}`).focus();
+        }, 100);
+      });
     },
   },
   computed: {
@@ -370,7 +369,7 @@ export default {
   padding: 0;
 }
 .activeColor {
-  background-color: lightgray;
+  background-color: rgb(235, 235, 235);
 }
 .todo__list-item__fold {
   position: absolute;
