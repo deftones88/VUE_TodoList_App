@@ -133,22 +133,22 @@ export default {
     // 수정용 제귀함수
     checkChildForEdit(items) {
       const editable = items.find((item) => item.index === this.notes.id);
-      console.log("editable: ", editable);
       if (editable) {
         editable.note.text = this.notes.text;
         editable.note.updated = new Date().toISOString();
-        items = editable;
-        return items;
       } else {
         for (let item of items) {
-          let found;
-          if (item.children) found = this.checkChildForDel(item.children);
-          if (found) {
-            item.children = found;
-            return items;
+          if (item.index === this.notes.id.substring(0, item.index.length)) {
+            for (let child of item.children) {
+              if (child.index === this.notes.id) {
+                child.note.text = this.notes.text;
+                child.note.updated = new Date().toISOString();
+              }
+            }
           }
         }
       }
+      return items;
     },
     // todo 수정용 함수
     editItem() {
@@ -162,7 +162,6 @@ export default {
       this.notes.text = this.notes.text.trim();
       // 수정 끝났고 텍스트 바뀌었다면 함수 실행
       if (!this.isEdit && this.notes.text !== this.preText) {
-        console.log(this.allNotes);
         this.allNotes.every((el) => {
           if (el.category === this.notes.category) {
             const filtered = this.checkChildForEdit(el.objList);
@@ -171,14 +170,9 @@ export default {
           }
           return true;
         });
-        // this.notes.updated = new Date().toISOString();
-        // this.checkChildForEdit(allNotes, this.notes);
-        // localStorage.setItem(
-        //   "notesapp-notes",
-        //   JSON.stringify(allNotes, this.input.getCircularReplacer())
-        // );
-        // this.tabs.selectTabWName(this.tabs.selected);
-        // this.tabs.updateCatFilter(this.tabs.selected);
+        this.saveAllNotes();
+        this.updateAllNotes();
+        this.filterNotes();
       }
     },
     // 차일드로 투두 만드는 함수
