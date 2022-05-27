@@ -22,7 +22,7 @@
             <input
               type="checkbox"
               ref="checkbox"
-              @click="onClickCheckbox(notes, $event)"
+              @click="onClickCheckbox($event)"
               :checked="notes.status"
             />
           </span>
@@ -225,65 +225,40 @@ export default {
         this.filterNotes();
       }
     },
-    // 완료된 항목 자식 부모도 상태 확인하는 함수 (work in progress)
-    // checkAll(allItems, status) {
-    //   if (allItems === undefined || allItems === null) return;
-    //   let allDone = true;
-    //   for (let items of allItems) {
-    //     if (items === null) return;
-    //     if (items.note && items.note.status === false) {
-    //       allDone = false;
-    //       break;
-    //     }
-    //   }
-
-    //   const parent = allItems[0].parents[0] ? allItems[0].parents[0] : null;
-    //   const gParent = parent ? parent.parents : null;
-    //   if (allDone && status) {
-    //     if (parent) parent.note.status = allDone;
-    //     this.checkAll(gParent, status);
-    //     // } else if (allDone && !status) {
-    //     //   this.checkAll(gParent, status);
-    //   } else {
-    //     if (parent) parent.note.status = allDone;
-    //   }
-    //   this.checkAll(allItems[0].parents, status);
-    // },
-    checkChild(items) {
-      // const baby = items.children;
-      // for (let child of baby) {
-      //   child.note.status = true;
-      //   if (child.children) this.checkChild(child);
-      // }
-    },
     // 체크 상태 업뎃하는 함수
-    updateChecked(allItems, item, status) {
-      // for (let items of allItems) {
-      //   if (items.note.id === item.id) {
-      //     const newNode = {};
-      //     if (items.children) {
-      //       newNode["children"] = items.children;
-      //     }
-      //     if (items.parents) newNode["parents"] = items.parents;
-      //     newNode["note"] = item;
-      //     allItems.splice(allItems.indexOf(items), 1, newNode);
-      //     this.checkAll(allItems, status);
-      //     if (status && items.children) this.checkChild(items);
-      //     break;
-      //   }
-      //   if (items.children) this.updateChecked(items.children, item, status);
-      // }
+    checkChildForStatus(items) {
+      const editable = items.find((item) => item.index === this.notes.id);
+      if (editable) {
+        editable.note.status = this.checked;
+        editable.note.updated = new Date().toISOString();
+      } else {
+        for (let item of items) {
+          if (item.index === this.notes.id.substring(0, item.index.length)) {
+            for (let child of item.children) {
+              if (child.index === this.notes.id) {
+                child.note.status = this.checked;
+                child.note.updated = new Date().toISOString();
+              }
+            }
+          }
+        }
+      }
+      return items;
     },
     // 체크하면 호출되는 함수
-    onClickCheckbox(notes, e) {
-      let ret;
-      this.allNotes.filter((el) => {
-        if (el.category === notes.category) {
-          ret = el.objList.find((e) => {
-            return e.note === notes;
-          });
+    onClickCheckbox(e) {
+      this.allNotes.every((el) => {
+        if (el.category === this.notes.category) {
+          this.checked = e.target.checked;
+          const filtered = this.checkChildForStatus(el.objList);
+          el.objList = filtered;
+          return false;
         }
+        return true;
       });
+      this.saveAllNotes();
+      this.updateAllNotes();
+      this.filterNotes();
       // const allNotes = this.main.getAllNotes();
       // this.checked = e.target.checked;
       // this.notes.status = this.checked;
