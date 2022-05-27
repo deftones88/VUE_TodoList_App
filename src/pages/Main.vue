@@ -39,16 +39,18 @@
                   </span>
                   <span>{{ notes.category }}</span>
                 </h1>
-                <TreeItem
-                  v-for="(obj, index) in notes.objList"
-                  :key="index"
-                  :front="true"
-                  :notes="obj.note"
-                  :subs="obj.children"
-                  :upper="obj"
-                  :depth="0"
-                  :selected="selectedTask"
-                />
+                <div class="treeitem_wrapper">
+                  <TreeItem
+                    v-for="(obj, index) in notes.objList"
+                    :key="index"
+                    :front="true"
+                    :notes="obj.note"
+                    :subs="obj.children"
+                    :upper="obj"
+                    :depth="0"
+                    :selected="selectedTask"
+                  />
+                </div>
               </div>
             </Tab>
             <Tab
@@ -61,16 +63,18 @@
                 v-for="notes in filteredNotes"
                 :key="notes.id"
               >
-                <TreeItem
-                  v-for="(obj, index) in notes.objList"
-                  :key="index"
-                  :front="false"
-                  :notes="obj.note"
-                  :subs="obj.children"
-                  :upper="obj"
-                  :depth="0"
-                  :selected="selectedTask"
-                />
+                <div class="treeitem_wrapper">
+                  <TreeItem
+                    v-for="(obj, index) in notes.objList"
+                    :key="index"
+                    :front="false"
+                    :notes="obj.note"
+                    :subs="obj.children"
+                    :upper="obj"
+                    :depth="0"
+                    :selected="selectedTask"
+                  />
+                </div>
               </div>
             </Tab>
           </TabsWrapper>
@@ -204,9 +208,12 @@ export default {
 .tree_wrapper {
   margin-bottom: 2em;
 }
+.treeitem_wrapper {
+  margin-top: 1em;
+}
 .category_title {
   font-size: 1.8em;
-  margin: 1em 1em 0.5em;
+  margin: 1em 1em 0;
   text-align: left;
 }
 .searchInput {
