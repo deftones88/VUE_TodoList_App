@@ -231,14 +231,26 @@ export default {
       if (editable) {
         editable.note.status = this.checked;
         editable.note.updated = new Date().toISOString();
+        if (this.checked === true) {
+          for (let child of editable.children) {
+            child.note.status = true;
+          }
+        }
       } else {
         for (let item of items) {
           if (item.index === this.notes.id.substring(0, item.index.length)) {
+            let count = 0;
             for (let child of item.children) {
               if (child.index === this.notes.id) {
                 child.note.status = this.checked;
                 child.note.updated = new Date().toISOString();
               }
+              if (child.note.status === true) ++count;
+            }
+            if (count === item.children.length) {
+              item.note.status = true;
+            } else {
+              item.note.status = false;
             }
           }
         }
@@ -259,17 +271,6 @@ export default {
       this.saveAllNotes();
       this.updateAllNotes();
       this.filterNotes();
-      // const allNotes = this.main.getAllNotes();
-      // this.checked = e.target.checked;
-      // this.notes.status = this.checked;
-      // this.notes.updated = new Date().toISOString();
-      // this.updateChecked(allNotes, this.notes, this.checked);
-      // localStorage.setItem(
-      //   "notesapp-notes",
-      //   JSON.stringify(allNotes, this.input.getCircularReplacer())
-      // );
-      // this.tabs.selectTabWName(this.tabs.selected);
-      // this.tabs.updateCatFilter(this.tabs.selected);
     },
     // 수정할 때 포커스 해주는 함수
     editFocus(id) {
@@ -287,7 +288,7 @@ export default {
     },
     indent() {
       return {
-        transform: `translate(${this.depth * 20}px)`,
+        transform: `translate(${this.depth * 28}px)`,
       };
     },
     showMatch() {
@@ -306,9 +307,13 @@ export default {
 }
 .todo__list-item {
   width: 100%;
+  border-spacing: 0;
 }
 .todo__list-item-tr {
   position: relative;
+}
+td {
+  padding: 0.1em 0;
 }
 .todo__list-item__category {
   width: 20%;
