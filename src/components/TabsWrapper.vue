@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class="tabs">
-      <ul>
+      <ul @click="updateVisibleCat(false)">
         <li
           v-for="(tab, index) in tabs"
           :key="index"
@@ -41,6 +41,7 @@ export default {
       "updateAllNotes",
       "updateFilter",
       "updateTabs",
+      "updateVisibleCat",
       "selectTab",
     ]),
     selectTabWName(name) {

@@ -6,11 +6,12 @@ export const useStore = defineStore("savedNotes", {
     filteredNotes: [],
     categories: [],
     local: "notes_app",
-    filter: "",
+    filter: "", // filter for allNotes
     filteredLength: 0,
     tabs: [],
     selectedTab: "All",
     selectedCat: null,
+    visibleCat: false, // category dropdown toggle
     child: false,
   }),
   getters: {
@@ -36,6 +37,9 @@ export const useStore = defineStore("savedNotes", {
     updateSelectedCat(value) {
       this.selectedCat = value;
     },
+    updateVisibleCat(value) {
+      this.visibleCat = value;
+    },
     filterNotes(value, option = 0) {
       if (!option) {
         if (this.filter) {
@@ -46,6 +50,7 @@ export const useStore = defineStore("savedNotes", {
             this.filteredLength = this.filteredNotes[0].objList.length;
         } else {
           this.filteredNotes = this.allNotes;
+          this.filteredLength = this.allNotes.length;
         }
       } else if (option === 1) {
         const objList = [];

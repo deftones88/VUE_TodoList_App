@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="todo_wrapper">
       <InputBar :note="null"></InputBar>
-      <div class="filtered">
+      <div class="filtered" @click="updateVisibleCat(false)">
         <div class="searchInput">
           <input
             v-model="searchKey"
@@ -14,7 +14,11 @@
           </span>
         </div>
       </div>
-      <div class="tabs-wrapper" v-show="categories.length">
+      <div
+        class="tabs-wrapper"
+        v-show="categories.length"
+        @click="updateVisibleCat(false)"
+      >
         <div>
           <TabsWrapper>
             <Tab name="All" selected="true">
@@ -68,7 +72,13 @@
           </TabsWrapper>
         </div>
       </div>
-      <div class="empty" v-if="!filteredLength">Add New Tasks</div>
+      <div
+        class="empty"
+        v-if="!filteredLength"
+        @click="updateVisibleCat(false)"
+      >
+        Add New Tasks
+      </div>
     </div>
   </div>
 </template>
@@ -105,6 +115,7 @@ export default {
     ...mapActions(useStore, [
       "updateAllNotes",
       "updateCategories",
+      "updateVisibleCat",
       "filterNotes",
     ]),
     byteSize(val) {

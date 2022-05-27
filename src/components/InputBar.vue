@@ -46,6 +46,7 @@
             rows="1.5"
             @keyup.enter="saveNote"
             @keydown.enter.prevent
+            @focus="updateVisibleCat(false)"
             placeholder="Press Enter to submit"
           ></textarea>
           <button class="todo__input_button" @click="saveNote">등록</button>
@@ -79,7 +80,7 @@ export default {
     return {
       notesStore: useStore(),
       searchCat: "", // 카테고리에 입력한 값
-      visibleCat: false, // 카테고리 목록 창 toggle
+      // visibleCat: false, // 카테고리 목록 창 toggle
       noteToSave: {
         category: null,
         id: null,
@@ -99,6 +100,7 @@ export default {
       "updateFilter",
       "updateSelectedCat",
       "updateChild",
+      "updateVisibleCat",
       "saveAllNotes",
       "saveNewNote",
       "selectTab",
@@ -120,13 +122,13 @@ export default {
     },
     // 인풋 포커스 해주는 함수
     onClickSelectedItem() {
-      this.visibleCat = !this.visibleCat;
+      this.updateVisibleCat(!this.visibleCat);
       window.setTimeout(() => document.getElementById("input").focus(), 0);
     },
     // 카테고리 선택 함수
     selectCat(cat) {
       this.updateSelectedCat(cat);
-      this.visibleCat = false;
+      this.updateVisibleCat(false);
       document.getElementsByClassName("todo__input")[0].focus();
     },
     // 카테고리 삭제 함수
@@ -140,6 +142,7 @@ export default {
         this.updateAllNotes();
         this.updateCategories();
         this.filterNotes();
+        this.updateSelectedCat(0);
       }
     },
     // 카테고리 추가 함수
@@ -155,7 +158,7 @@ export default {
       this.allNotes.push({ category: this.searchCat, objList: [] });
       this.saveAllNotes();
 
-      this.visibleCat = false; // 카테고리 목록 창 닫기
+      this.updateVisibleCat(false); // 카테고리 목록 창 닫기
       this.updateSelectedCat(this.searchCat); // 선택된 카테고리 표시
       this.searchCat = ""; // 카테고리 검색어 초기화
       this.updateCategories();
@@ -249,6 +252,7 @@ export default {
       "local",
       "allNotes",
       "child",
+      "visibleCat",
     ]),
     // 새 카테고리 쓸 때 밑에 비슷한 거 보여주는 함수
     filteredCat() {
@@ -314,7 +318,7 @@ export default {
   z-index: 99;
 }
 .dropdown > input {
-  width: 100%;
+  width: 90%;
   height: 30px;
   border: 2px solid lightgray;
   font-size: 1em;
