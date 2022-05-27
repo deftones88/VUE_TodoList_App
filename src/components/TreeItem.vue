@@ -58,11 +58,11 @@
           <span v-if="depth < 1">
             <span
               @click="makeFolder()"
-              v-show="notes && selected !== notes.id && !checked"
+              v-show="notes && selected !== notes.id && !notes.status"
             >
               <img src="@/assets/plus-circle.svg" />
             </span>
-            <span @click="makeFolder(1)" v-show="showMatch && !checked">
+            <span @click="makeFolder(1)" v-show="showMatch && !notes.status">
               <img src="@/assets/plus-circle-dotted.svg" />
             </span>
           </span>
