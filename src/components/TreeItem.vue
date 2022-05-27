@@ -32,7 +32,9 @@
             >{{ notes.text }}</span
           >
           <input
+            type="text"
             class="todo__list-item__text-input"
+            :style="indent"
             :id="`editInput-${notes ? notes.id : 0}`"
             v-show="isEdit"
             v-model="notes.text"
@@ -351,9 +353,11 @@ export default {
 }
 .todo__list-item__text-input {
   position: absolute;
-  left: 20px;
-  top: 0;
+  left: 45px;
+  top: -2px;
   bottom: 0;
+  height: 100%;
+  font-size: 1em;
 }
 .todo__list-item__text-done {
   color: rgb(173, 173, 173);
