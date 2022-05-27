@@ -31,9 +31,11 @@ import { useStore } from "@/store/useNotes";
 
 export default {
   name: "TabsWrapper",
+  props: ["notes"],
   data() {
     return {
       notesStore: useStore(),
+      countTotal: [],
     };
   },
   methods: {
@@ -65,6 +67,7 @@ export default {
         this.updateTabs(tabbers);
       }, 100);
     },
+    setCountTotal() {},
   },
   mounted() {
     this.renderTabs();

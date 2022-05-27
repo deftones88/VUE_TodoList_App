@@ -143,6 +143,7 @@ export default {
         this.updateCategories();
         this.filterNotes();
         this.updateSelectedCat(0);
+        this.selectTab({ name: "All" });
         this.showPopup();
       }
     },

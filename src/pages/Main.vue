@@ -20,16 +20,24 @@
         @click="updateVisibleCat(false)"
       >
         <div>
-          <TabsWrapper>
+          <TabsWrapper :notes="filteredNotes">
             <Tab name="All" selected="true">
-              <div
+              <!-- <div
                 class="tree_wrapper"
                 v-for="notes in filteredNotes"
                 :key="notes.id"
                 v-show="notes.objList.length"
+              > -->
+              <div
+                class="tree_wrapper"
+                v-for="notes in filteredNotes"
+                :key="notes.id"
               >
                 <h1 class="category_title" v-if="selectedTab === 'All'">
-                  {{ notes.category }}
+                  <span :style="{ marginRight: '.5em' }">
+                    <img src="@/assets/journal.svg" />
+                  </span>
+                  <span>{{ notes.category }}</span>
                 </h1>
                 <TreeItem
                   v-for="(obj, index) in notes.objList"
@@ -214,6 +222,7 @@ export default {
   margin-bottom: 2em;
 }
 .category_title {
+  font-size: 1.8em;
   margin: 1em 1em 0.5em;
   text-align: left;
 }
