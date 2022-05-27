@@ -71,13 +71,18 @@ export const useStore = defineStore("savedNotes", {
         ret.push({ objList: objList });
         this.filteredNotes = ret;
       }
+      const status = {
+        true: 1,
+        false: 2,
+      };
       for (let notes of this.filteredNotes) {
         notes.objList.sort((a, b) => {
-          if (a.note.updated > b.note.updated) return -1;
-          if (a.note.updated < b.note.updated) return 1;
+          if (status[a.note.status] > status[b.note.status]) return -1;
+          if (status[a.note.status] < status[b.note.status]) return 1;
+          if (a.note.updated > b.note.updated) return 1;
+          if (a.note.updated < b.note.updated) return -1;
         });
       }
-      console.log(this.filteredNotes);
     },
     saveAllNotes(value = this.allNotes) {
       localStorage.setItem(
