@@ -25,7 +25,7 @@
               @keyup.enter="addNewCat"
             />
             <div class="options">
-              <ul v-show="notesStore.categoriesCount">
+              <ul v-show="categoriesCount">
                 <li v-for="(name, index) of filteredCat" :key="`name-${index}`">
                   <span class="options_name" @click="selectCat(name)">{{
                     name
@@ -42,11 +42,15 @@
           <textarea
             v-model="noteToSave.text"
             class="todo__input"
-            :id="`textArea-${note ? note.id : 0}`"
+            :id="`textArea-${note ? note.note.id : 0}`"
             rows="1.5"
             @keyup.enter="saveNote"
             @keydown.enter.prevent
             @focus="updateVisibleCat(false)"
+            @blur="
+              updateSelectedTask(null);
+              updateChild(false);
+            "
             placeholder="Press Enter to submit"
           ></textarea>
           <button class="todo__input_button" @click="saveNote">등록</button>
@@ -89,8 +93,6 @@ export default {
         status: false,
       },
       popup: false, // 카테고리 삭제시 나오는 팝업
-      main: this.$root.$refs.main,
-      tabs: this.$root.$refs.tabs,
     };
   },
   methods: {
@@ -246,9 +248,9 @@ export default {
     },
     // 인풋창 포커스
     inputFocus(id) {
-      // this.$nextTick(() => {
-      //   document.getElementById(`textArea-${id}`).focus();
-      // });
+      this.$nextTick(() => {
+        document.getElementById(`textArea-${id}`).focus();
+      });
     },
   },
   computed: {
@@ -259,6 +261,7 @@ export default {
       "allNotes",
       "child",
       "visibleCat",
+      "categoriesCount",
     ]),
     // 새 카테고리 쓸 때 밑에 비슷한 거 보여주는 함수
     filteredCat() {
