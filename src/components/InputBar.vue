@@ -220,24 +220,27 @@ export default {
       this.main.selected = null;
     },
     // 새로운 투두 입력할 때 사용하는 제귀함수
-    // recursText(item, text) {
-    //   let total = [];
-    //   if (item.objList.length) {
-    //     console.log(item.objList);
-    //   }
-    // for (let notes of item) {
-    //   if (notes.note && notes.note.text) {
-    //     if (notes.note.text.toLowerCase().includes(text))
-    //       total.push(notes.note);
-    //   }
-    //   if (notes.children) {
-    //     for (let child of notes.children)
-    //       total.push(...this.recursText(child, text));
-    //   }
-    // }
+    findText(items, text) {
+      const total = [];
+      for (const item of items) {
+        total.push(
+          ...item.objList.filter((obj) =>
+            obj.note.text.toLowerCase().includes(text)
+          )
+        );
+        for (const child of item.objList) {
+          if (child.children) {
+            total.push(
+              ...child.children.filter((obj) =>
+                obj.note.text.toLowerCase().includes(text)
+              )
+            );
+          }
+        }
+      }
 
-    // return total;
-    // },
+      return total;
+    },
     // 인풋창 포커스
     inputFocus(id) {
       // this.$nextTick(() => {
@@ -266,12 +269,8 @@ export default {
     filteredText() {
       const ret = [];
       const text = this.noteToSave.text.toLowerCase();
-      for (let notes of this.notesStore.allNotes) {
-        ret.push(
-          ...notes.objList.filter((obj) =>
-            obj.note.text.toLowerCase().includes(text)
-          )
-        );
+      if (text) {
+        ret.push(...this.findText(this.allNotes, text));
       }
       return ret.sort((a, b) => {
         new Date(a.note.updated) > new Date(b.note.updated) ? 1 : -1;
