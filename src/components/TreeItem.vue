@@ -232,9 +232,11 @@ export default {
         editable.note.status = this.checked;
         editable.note.updated = new Date().toISOString();
         if (this.checked === true) {
-          for (let child of editable.children) {
-            child.note.status = true;
-            child.note.updated = new Date().toISOString();
+          if (editable.children) {
+            for (let child of editable.children) {
+              child.note.status = true;
+              child.note.updated = new Date().toISOString();
+            }
           }
         }
       } else {

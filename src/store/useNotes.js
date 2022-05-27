@@ -71,6 +71,13 @@ export const useStore = defineStore("savedNotes", {
         ret.push({ objList: objList });
         this.filteredNotes = ret;
       }
+      for (let notes of this.filteredNotes) {
+        notes.objList.sort((a, b) => {
+          if (a.note.updated > b.note.updated) return -1;
+          if (a.note.updated < b.note.updated) return 1;
+        });
+      }
+      console.log(this.filteredNotes);
     },
     saveAllNotes(value = this.allNotes) {
       localStorage.setItem(
