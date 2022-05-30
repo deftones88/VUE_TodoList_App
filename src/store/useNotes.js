@@ -34,8 +34,8 @@ export const useStore = defineStore("savedNotes", {
         ret.push(obj.category);
       }
       this.categories = ret.sort((a, b) => {
-        if (a.category > b.category) return 1;
-        else return -1;
+        if (a.category > b.category) return -1;
+        else return 1;
       });
     },
     updateSelectedTask(value) {
