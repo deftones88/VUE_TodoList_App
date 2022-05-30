@@ -33,7 +33,10 @@ export const useStore = defineStore("savedNotes", {
       for (const obj of this.allNotes) {
         ret.push(obj.category);
       }
-      this.categories = ret;
+      this.categories = ret.sort((a, b) => {
+        if (a.category > b.category) return 1;
+        else return -1;
+      });
     },
     updateSelectedTask(value) {
       this.selectedTask = value;

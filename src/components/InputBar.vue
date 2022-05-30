@@ -78,7 +78,7 @@ import { mapActions, mapState } from "pinia";
 import { useStore } from "@/store/useNotes";
 
 export default {
-  name: "InputItem",
+  name: "InputBar",
   props: ["note"],
   data() {
     return {
@@ -161,7 +161,10 @@ export default {
       if (exists.length) return;
       // 저장
       this.allNotes.push({ category: this.searchCat, objList: [] });
+
       this.saveAllNotes();
+      this.updateAllNotes();
+      this.filterNotes();
 
       this.updateVisibleCat(false); // 카테고리 목록 창 닫기
       this.updateSelectedCat(this.searchCat); // 선택된 카테고리 표시
