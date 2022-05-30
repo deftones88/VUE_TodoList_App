@@ -120,15 +120,6 @@ export default {
       const len = new Blob([val]).size;
       return len;
     },
-    // localStorage에서 불러올 때 circular reference 때문에 지웠던 parents를 다시 더하는 함수
-    // setParents(object, parents) {
-    //   for (var key in object) {
-    //     object[key].parents = [];
-    //     object[key].parents.push(parents);
-    //     if (object[key].children) {
-    //       this.setParents(object[key].children, object[key]);
-    //     }
-    //   }
     // },
     // 단어 검색 필터용 제귀함수
     recursText(item, text) {

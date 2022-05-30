@@ -28,8 +28,10 @@
           </span>
           <span
             class="todo__list-item__text"
-            :class="{ 'todo__list-item__text-done': checked || notes.status }"
-            >{{ notes.text }}</span
+            :class="{
+              'todo__list-item__text-done': computedChecked || notes.status,
+            }"
+            >{{ notes.text }} : {{ checked }}</span
           >
           <input
             type="text"
@@ -44,13 +46,14 @@
         </td>
         <td
           class="todo__list-item__date"
-          :class="{ 'todo__list-item__text-done': checked || notes.status }"
+          :class="{
+            'todo__list-item__text-done': computedChecked || notes.status,
+          }"
         >
           {{ changeDate(notes.updated) }}
         </td>
         <td class="todo__list-item__edit">
           <span @click="editItem" v-show="active">
-            <!-- <span @click="editItem"> -->
             <img src="@/assets/pencil.svg" />
           </span>
         </td>
@@ -297,6 +300,9 @@ export default {
     },
     showMatch() {
       return this.notes && this.selected === this.notes.id;
+    },
+    computedChecked() {
+      return this.notes.status;
     },
   },
 };
