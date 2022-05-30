@@ -7,12 +7,6 @@
         @mouseleave="active = false"
         :class="{ activeColor: active }"
       >
-        <!-- <tr class="todo__list-item-tr"> -->
-        <!-- <td class="todo__list-item__category" v-if="front">
-          <div>
-            <span v-if="!depth"> {{ notes.category }}</span>
-          </div>
-        </td> -->
         <td class="todo__list-item__item" :style="indent">
           <span :style="{ marginRight: '1em' }"></span>
           <span v-if="depth" :style="{ marginRight: '.5em' }">
