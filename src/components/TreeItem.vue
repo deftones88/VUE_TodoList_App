@@ -21,11 +21,12 @@
             />
           </span>
           <span
+            v-show="!isEdit"
             class="todo__list-item__text"
             :class="{
               'todo__list-item__text-done': computedChecked || notes.status,
             }"
-            >{{ notes.text }} : {{ checked }}</span
+            >{{ notes.text }}</span
           >
           <input
             type="text"
@@ -329,6 +330,7 @@ td {
 .todo__list-item__text {
   text-align: left;
   padding-left: 0.5em;
+  word-break: break-all;
 }
 .todo__list-item__text-input {
   position: absolute;
