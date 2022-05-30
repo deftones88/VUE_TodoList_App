@@ -28,16 +28,15 @@
             }"
             >{{ notes.text }}</span
           >
-          <input
-            type="text"
+          <textarea
             class="todo__list-item__text-input"
             :style="indent"
             :id="`editInput-${notes ? notes.id : 0}`"
             v-show="isEdit"
             v-model="notes.text"
             @keyup.enter="editItem"
-            @blur="isEdit = false"
-          />
+            @blur="onBlur"
+          ></textarea>
         </td>
         <td
           class="todo__list-item__date"
@@ -334,11 +333,12 @@ td {
 }
 .todo__list-item__text-input {
   position: absolute;
-  left: 45px;
-  top: -2px;
+  left: 32px;
+  top: 0px;
   bottom: 0;
-  height: 100%;
   font-size: 1em;
+  resize: none;
+  width: 90%;
 }
 .todo__list-item__text-done {
   color: rgb(173, 173, 173);
